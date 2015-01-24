@@ -12,7 +12,7 @@
 
   <link rel="shortcut icon" href="http://getbootstrap.com/assets/ico/favicon.ico" />
 
-  <title>Layout page</title>
+  <title>UWatch | A new hub for sharing videos</title>
 
   <!-- Bootstrap core CSS -->
 
@@ -37,7 +37,7 @@
           <span class="icon-bar"></span>
         </button>
 
-        <a class="navbar-brand" href="#">Brand</a>
+        <a class="navbar-brand" href="#">UWatch</a>
       </div>
 
       <div class="navbar-collapse collapse">
@@ -59,10 +59,21 @@
   <!-- Marketing -->
 
   <div class="jumbotron">
-    <div class="container">
-      <h2>Main message</h2>
-      <p class="lead">Sub message</p>
-    </div>
+    <h2>Create a desciptive link to your favorite content for sharing</h2>
+    <p class="lead">Just enter the link of a YouTube video and you&apos;re ready to go!</p>
+
+    <form id="youTube-url-convert-fm" action="#" method="post">
+      <div class="col-md-8 input-group lead">
+        <span class="input-group-addon glyphicon glyphicon-music"></span>
+        <input id="youTube-url" type="text" class="form-control" placeholder="YouTube URL" />
+      </div>
+  
+      <div id="youTube-url-errmsg" class="col-md-8 alert alert-danger">This isn't a valid YouTube URL</div>
+  
+      <div id="youTube-url-convert" class="col-md-8 lead btn-group">
+        <button id="youTube-url-convert-btn" type="button" class="btn btn-lg btn-success">Convert</button>
+      </div>
+    </form>
   </div>
 
   <!-- Main -->
