@@ -2,6 +2,8 @@ package webservice
 
 import (
 	"fmt"
+	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/youtube"
 	"net/http"
 	"regexp"
 )
@@ -35,6 +37,10 @@ type LengthenVideoUrl struct {
 	UrlPath string
 }
 
+type UnsupportedVideoType struct {
+	VideoType VideoType
+}
+
 type urlPattern struct {
 	videoType VideoType
 	pattern   *regexp.Regexp
@@ -45,12 +51,38 @@ var urlPatterns = []urlPattern{
 	urlPattern{YouTube, regexp.MustCompile("http.+youtu\\.be\\/(\\S+)")},
 }
 
+var videoCatalog catalog.VideoCatalog
+
 func (err *InvalidVideoUrl) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
 }
 
+func (err *UnsupportedVideoType) Error() string {
+	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
+}
+
 func LongVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error) {
-	return nil, nil
+	if videoType != YouTube {
+		return nil, &UnsupportedVideoType{videoType}
+	}
+
+	videoRecord, err := videoCatalog.SearchByID(videoId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO implement title converter here
+	title := videoRecord.Title
+
+	lengthenVideoUrl := &LengthenVideoUrl{
+		ParsedVideoUrl{videoId, videoType},
+		0, title,
+	}
+
+	fmt.Println(title)
+
+	return lengthenVideoUrl, nil
 }
 
 func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
@@ -83,4 +115,14 @@ func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 
 func (url *LengthenVideoUrl) String() string {
 	return ""
+}
+
+func init() {
+	var err error
+
+	videoCatalog, err = youtube.New()
+
+	if err != nil {
+		panic(err)
+	}
 }
