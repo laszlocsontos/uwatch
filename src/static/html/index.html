@@ -59,19 +59,30 @@
   <!-- Marketing -->
 
   <div class="jumbotron">
-    <h2>Create a desciptive link to your favorite content for sharing</h2>
-    <p class="lead">Just enter the link of a YouTube video and you&apos;re ready to go!</p>
+    <div class="row">
+      <h2 class="col-md-8">Create a desciptive link to your favorite content for sharing</h2>
+    </div>
+
+    <div class="row">
+      <p class="col-md-8">Just enter the link of a YouTube video and you&apos;re ready to go!</p>
+    </div>
 
     <form id="youTube-url-convert-fm" action="#" method="post">
-      <div class="col-md-8 input-group lead">
-        <span class="input-group-addon glyphicon glyphicon-music"></span>
-        <input id="youTube-url" type="text" class="form-control" placeholder="YouTube URL" />
+      <div class="row">
+        <div class="col-md-4 input-group lead">
+          <span class="input-group-addon glyphicon glyphicon-music"></span>
+          <input id="youTube-url" type="text" class="form-control" placeholder="YouTube URL" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div id="youTube-url-errmsg" class="col-md-4 alert alert-danger" style="display: none">This isn't a valid YouTube URL</div>
       </div>
   
-      <div id="youTube-url-errmsg" class="col-md-8 alert alert-danger" style="display: none">This isn't a valid YouTube URL</div>
-  
-      <div id="youTube-url-convert" class="col-md-8 lead btn-group">
-        <button id="youTube-url-convert-btn" type="button" class="btn btn-lg btn-success">Convert</button>
+      <div class="row">
+        <div id="youTube-url-convert" class="col-md-4 btn-group">
+          <button id="youTube-url-convert-btn" type="button" class="btn btn-lg btn-success">Convert</button>
+        </div>
       </div>
     </form>
   </div>
