@@ -25,14 +25,14 @@ type InvalidVideoUrl struct {
 }
 
 type ParsedVideoUrl struct {
-	videoId   string
-	videoType VideoType
+	VideoId   string
+	VideoType VideoType
 }
 
 type LengthenVideoUrl struct {
 	ParsedVideoUrl
-	urlId   int64
-	urlPath string
+	UrlId   int64
+	UrlPath string
 }
 
 type urlPattern struct {
@@ -58,20 +58,20 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 		return nil, &InvalidVideoUrl{""}
 	}
 
-	parsedVideoUrl := &ParsedVideoUrl{videoType: unknown}
+	parsedVideoUrl := &ParsedVideoUrl{VideoType: unknown}
 
 	for _, urlPattern := range urlPatterns {
 		matches := urlPattern.pattern.FindStringSubmatch(videoUrl)
 
 		if matches != nil {
-			parsedVideoUrl.videoId = matches[1]
-			parsedVideoUrl.videoType = urlPattern.videoType
+			parsedVideoUrl.VideoId = matches[1]
+			parsedVideoUrl.VideoType = urlPattern.videoType
 
 			break
 		}
 	}
 
-	if parsedVideoUrl.videoType == unknown {
+	if parsedVideoUrl.VideoType == unknown {
 		return nil, &InvalidVideoUrl{videoUrl}
 	}
 

@@ -56,7 +56,7 @@ func TestLongVideoUrl(t *testing.T) {
 		got := _EMPTY_STRING
 
 		if result != nil {
-			got = result.urlPath
+			got = result.UrlPath
 		}
 
 		want := data.want
