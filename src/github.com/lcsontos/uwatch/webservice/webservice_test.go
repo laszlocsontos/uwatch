@@ -17,22 +17,24 @@ type parseVideoUrlTestCase struct {
 }
 
 const (
-	_EMPTY             = ""
+	_EMPTY_STRING      = ""
 	_INVALID_VIDEO_ID  = "abcdefgh"
 	_INVALID_VIDEO_URL = "http://www.google.com"
 )
 
+var _EMPTY_PVU = ParsedVideoUrl{"", 0}
+
 var longVideoUrlData = []longVideoUrlTestCase{
 	{"meditations-with-sri-chinmoy-vol--1", YouTube, "5VAYzfvNI1w"},
 	{"zen---musica-de-relajacion-y-balance-espiritual", YouTube, "Gd0TiO0iMfc"},
-	{_EMPTY, YouTube, _EMPTY},
-	{_EMPTY, Vimeo, _EMPTY},
-	{_EMPTY, Youku, _EMPTY},
-	{_EMPTY, Rutube, _EMPTY},
-	{_EMPTY, YouTube, _INVALID_VIDEO_ID},
-	{_EMPTY, Vimeo, _INVALID_VIDEO_ID},
-	{_EMPTY, Youku, _INVALID_VIDEO_ID},
-	{_EMPTY, Rutube, _INVALID_VIDEO_ID},
+	{_EMPTY_STRING, YouTube, _EMPTY_STRING},
+	{_EMPTY_STRING, Vimeo, _EMPTY_STRING},
+	{_EMPTY_STRING, Youku, _EMPTY_STRING},
+	{_EMPTY_STRING, Rutube, _EMPTY_STRING},
+	{_EMPTY_STRING, YouTube, _INVALID_VIDEO_ID},
+	{_EMPTY_STRING, Vimeo, _INVALID_VIDEO_ID},
+	{_EMPTY_STRING, Youku, _INVALID_VIDEO_ID},
+	{_EMPTY_STRING, Rutube, _INVALID_VIDEO_ID},
 }
 
 var parseVideoUrlData = []parseVideoUrlTestCase{
@@ -47,11 +49,11 @@ func TestLongVideoUrl(t *testing.T) {
 	for _, data := range longVideoUrlData {
 		result, err := LongVideoUrl(data.videoType, data.videoId)
 
-		if err != nil && data.want != _EMPTY {
+		if err != nil && data.want != _EMPTY_STRING {
 			t.Fatal(err)
 		}
 
-		got := _EMPTY
+		got := _EMPTY_STRING
 
 		if result != nil {
 			got = result.urlPath
@@ -74,13 +76,17 @@ func TestParseVideoUrl(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		got := ParsedVideoUrl{}
+		got := _EMPTY_PVU
 
 		if result != nil {
 			got = *result
 		}
 
-		want := *data.want
+		want := _EMPTY_PVU
+
+		if w := data.want; w != nil {
+			want = *w
+		}
 
 		if !reflect.DeepEqual(got, want) {
 			t.Fatalf("TestParseVideoUrl(%v) = %v, but wanted %v",
