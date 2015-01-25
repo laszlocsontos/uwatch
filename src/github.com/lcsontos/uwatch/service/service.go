@@ -2,11 +2,12 @@ package service
 
 import (
 	"fmt"
-	// "net/http"
+	"net/http"
 	"regexp"
 
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/normalizer"
+	"github.com/lcsontos/uwatch/store"
 )
 
 type VideoType int
@@ -86,7 +87,7 @@ func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
 	}
 }
 
-func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
+func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoId string, req *http.Request) (*LengthenedVideoUrl, error) {
 	if videoType != YouTube {
 		return nil, &UnsupportedVideoTypeError{videoType}
 	}
@@ -98,16 +99,18 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoI
 	}
 
 	normalizedTitle := normalizer.Normalize(videoRecord.Title)
-	title := videoRecord.Title
 
-	// TODO ID is zero until data store is implemented
-	var urlId int64 = 0
+	urlId, err := store.PutVideoRecord(videoRecord, req)
+
+	if err != nil {
+		return nil, err
+	}
 
 	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
 
 	LengthenedVideoUrl := &LengthenedVideoUrl{
 		ParsedVideoUrl{videoId, videoType},
-		title, urlId, urlPath,
+		videoRecord.Title, urlId, urlPath,
 	}
 
 	return LengthenedVideoUrl, nil

@@ -244,7 +244,7 @@
       var urlId = this.ensureField(result, "UrlId", '');
       var urlPath = this.ensureField(result, "UrlPath", '');
 
-      var url = urlId + "/" + urlPath;
+      var url = "/" + urlPath;
 
       var html = [];
 

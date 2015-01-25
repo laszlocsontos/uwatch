@@ -35,7 +35,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	videoCatalog := getVideoCatalog(videoType, req)
 
-	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, videoType, videoId)
+	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, videoType, videoId, req)
 
 	handledError := false
 

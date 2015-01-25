@@ -27,12 +27,17 @@ func GetVideoRecord(id int64, req *http.Request) (*catalog.VideoRecord, error) {
 	return &videoRecord, nil
 }
 
-func PutUrl(videoRecord *catalog.VideoRecord, req *http.Request) (int64, error) {
+func PutVideoRecord(videoRecord *catalog.VideoRecord, req *http.Request) (int64, error) {
 	context := appengine.NewContext(req)
 
 	key := datastore.NewIncompleteKey(context, _KIND, nil)
 
-	if _, err := datastore.Put(context, key, videoRecord); err != nil {
+	// Avoid error: Property Description is too long. Maximum length is 500
+	videoRecord.Description = ""
+
+	key, err := datastore.Put(context, key, videoRecord)
+
+	if err != nil {
 		return -1, err
 	}
 

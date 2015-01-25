@@ -3,12 +3,12 @@ package html
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
 
+	"github.com/lcsontos/uwatch/store"
 	"github.com/lcsontos/uwatch/util"
 )
 
@@ -26,13 +26,13 @@ func (err *invalidLongUrlError) Error() string {
 func ProcessTemplate(rw http.ResponseWriter, req *http.Request) {
 	tc := make(map[string]interface{})
 
-	urlId, normalizedTitle, err := getPathTokens(req.URL)
+	urlId, _, err := getPathTokens(req.URL)
 
 	if util.HandleError(rw, req, err, err, true) {
 		return
 	}
 
-	tc["URL"], err = getVideoUrl(urlId, normalizedTitle)
+	tc["URL"], err = getVideoUrl(urlId, req)
 
 	if util.HandleError(rw, req, err, err, true) {
 		return
@@ -61,10 +61,14 @@ func getPathTokens(url *url.URL) (int64, string, error) {
 	return urlId, normalizedTitle, nil
 }
 
-func getVideoUrl(urlId int64, normalizedTitle string) (string, error) {
-	// TODO
-	log.Printf("urlId=%v, normalizedTitle=%v", urlId, normalizedTitle)
+func getVideoUrl(urlId int64, req *http.Request) (string, error) {
+	_, err := store.GetVideoRecord(urlId, req)
 
+	if err != nil {
+		return "", err
+	}
+
+	// TODO
 	return "https://www.youtube.com/watch?v=kfjHDanw7is", nil
 }
 
