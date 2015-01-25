@@ -113,6 +113,7 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 }
 
 func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	fmt.Fprintf(rw, "SW")
 }
 
 func (url *LengthenVideoUrl) String() string {
