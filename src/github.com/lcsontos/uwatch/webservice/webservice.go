@@ -5,7 +5,6 @@ import (
 	"appengine/urlfetch"
 
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/service"
+	"github.com/lcsontos/uwatch/util"
 	"github.com/lcsontos/uwatch/youtube"
 )
 
@@ -29,7 +29,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	videoType, err := service.GetVideoTypeByName(videoTypeName)
 
-	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); handleError(rw, req, err, apperr, isAppErr) {
+	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); util.HandleError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
@@ -41,11 +41,11 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	switch apperr := err.(type) {
 	case *service.UnsupportedVideoTypeError:
-		handledError = handleError(rw, req, err, apperr, true)
+		handledError = util.HandleError(rw, req, err, apperr, true)
 	case *catalog.NoSuchVideoError:
-		handledError = handleError(rw, req, err, apperr, true)
+		handledError = util.HandleError(rw, req, err, apperr, true)
 	default:
-		handledError = handleError(rw, req, err, apperr, false)
+		handledError = util.HandleError(rw, req, err, apperr, false)
 	}
 
 	if handledError {
@@ -64,7 +64,7 @@ func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	parsedVideoUrl, err := service.ParseVideoUrl(videoUrl)
 
-	if apperr, isAppErr := err.(*service.InvalidVideoUrlError); handleError(rw, req, err, apperr, isAppErr) {
+	if apperr, isAppErr := err.(*service.InvalidVideoUrlError); util.HandleError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
@@ -123,22 +123,4 @@ func getVideoCatalog(videoType service.VideoType, req *http.Request) catalog.Vid
 	*/
 
 	return videoCatalog
-}
-
-func handleError(rw http.ResponseWriter, req *http.Request, err, apperr error, isAppErr bool) bool {
-	if err == nil {
-		return false
-	}
-
-	if status := http.StatusBadRequest; isAppErr {
-		http.Error(rw, apperr.Error(), status)
-	} else {
-		status = http.StatusInternalServerError
-
-		// TODO Generalize error handling
-		http.Error(rw, fmt.Sprintf("INTERNAL ERROR: %s", err.Error()), status)
-		log.Printf(err.Error())
-	}
-
-	return true
 }

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/http"
-	"runtime"
 
 	"github.com/gorilla/mux"
 
+	"github.com/lcsontos/uwatch/util"
 	"github.com/lcsontos/uwatch/webservice"
 )
 
@@ -17,7 +16,7 @@ func handleSafely(handlerFunc handlerFuncType) handlerFuncType {
 		// Recover Panic
 		defer func() {
 			if err := recover(); err != nil {
-				panicHandler(err, rw, req)
+				util.PanicHandler(err, rw, req)
 			}
 		}()
 
@@ -38,16 +37,4 @@ func init() {
 		handleSafely(webservice.GetParseVideoUrl)).Methods("POST")
 
 	http.Handle("/", router)
-}
-
-func panicHandler(err interface{}, rw http.ResponseWriter, req *http.Request) {
-	var stack [4096]byte
-
-	runtime.Stack(stack[:], false)
-
-	log.Printf(
-		"Handler for %s[url:%s, data:%s] has failed with %s\nStack trace:\n %s\n",
-		req.Method, req.URL, req.Form, err, stack[:])
-
-	http.Error(rw, "SYSTEM ERROR", http.StatusInternalServerError)
 }
