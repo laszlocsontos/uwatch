@@ -25,7 +25,7 @@ func HandleError(rw http.ResponseWriter, req *http.Request, err, apperr error, i
 	return true
 }
 
-func PanicHandler(err interface{}, rw http.ResponseWriter, req *http.Request) {
+func HandlePanic(err interface{}, rw http.ResponseWriter, req *http.Request) {
 	var stack [4096]byte
 
 	runtime.Stack(stack[:], false)

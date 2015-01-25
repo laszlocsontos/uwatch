@@ -16,7 +16,7 @@ func handleSafely(handlerFunc handlerFuncType) handlerFuncType {
 		// Recover Panic
 		defer func() {
 			if err := recover(); err != nil {
-				util.PanicHandler(err, rw, req)
+				util.HandlePanic(err, rw, req)
 			}
 		}()
 
