@@ -252,8 +252,10 @@
         "<a href=\"",
         url,
         "\">",
+        "<strong>",
         window.location.origin,
-        url
+        url,
+        "</strong>"
       );
 
       this.youTubeUrlMsg.addClass(FIELD_YOUTUBE_URL_MSG_SUCCESS_CLASS);
