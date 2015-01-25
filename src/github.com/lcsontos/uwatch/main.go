@@ -1,16 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/gorilla/mux"
 
 	"github.com/lcsontos/uwatch/webservice"
 )
 
 func init() {
-	http.HandleFunc("/api/", webservice.ServeHTTP)
-}
+	router := mux.NewRouter().StrictSlash(true)
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello!")
+	router.HandleFunc("/api/long_video_url/{videoType}/{videoId}", webservice.ServeHTTP)
+	router.HandleFunc("/api/parse_video_url/{videoUrl}", webservice.ServeHTTP)
+
+	http.Handle("/", router)
 }

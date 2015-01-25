@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/gorilla/mux"
+
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/youtube"
 )
@@ -114,7 +116,11 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 }
 
 func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(rw, "SW")
+	vars := mux.Vars(req)
+
+	for key, value := range vars {
+		fmt.Fprintf(rw, "Key: %v, Value: %v\n", key, value)
+	}
 }
 
 func (url *LengthenVideoUrl) String() string {
