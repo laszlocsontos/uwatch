@@ -1,6 +1,7 @@
 package webservice
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -71,19 +72,23 @@ func (err *UnsupportedVideoType) Error() string {
 }
 
 func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
-	ServeHTTP(rw, req)
+	vars := mux.Vars(req)
+
+	videoType := vars["videoType"]
+	videoId := vars["videoId"]
+
+	lengthenedVideoUrl, err := longVideoUrl(videoTypesLookupMap[videoType], videoId)
+
+	uvte, _ := err.(*UnsupportedVideoType)
+
+	if handledError(rw, err, uvte) {
+		return
+	}
+
+	json.NewEncoder(rw).Encode(*lengthenedVideoUrl)
 }
 
 func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
-	ServeHTTP(rw, req)
-}
-
-func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-
-	for key, value := range vars {
-		fmt.Fprintf(rw, "Key: %v, Value: %v\n", key, value)
-	}
 }
 
 func (videoType VideoType) String() string {
@@ -118,6 +123,22 @@ func initVideoTypesLookupMap() {
 	for videoType, videoTypeName := range videoTypesStringMap {
 		videoTypesLookupMap[videoTypeName] = videoType
 	}
+}
+
+func handledError(rw http.ResponseWriter, err, apperr error) bool {
+	if err == nil {
+		return false
+	}
+
+	if status := http.StatusBadRequest; apperr == nil {
+		status = http.StatusInternalServerError
+
+		http.Error(rw, err.Error(), status)
+	} else {
+		http.Error(rw, apperr.Error(), status)
+	}
+
+	return true
 }
 
 func longVideoUrl(videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
