@@ -62,14 +62,15 @@ func getPathTokens(url *url.URL) (int64, string, error) {
 }
 
 func getVideoUrl(urlId int64, req *http.Request) (string, error) {
-	_, err := store.GetVideoRecord(urlId, req)
+	videoRecord, err := store.GetVideoRecord(urlId, req)
 
 	if err != nil {
 		return "", err
 	}
 
-	// TODO
-	return "https://www.youtube.com/watch?v=kfjHDanw7is", nil
+	url := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoRecord.VideoId)
+
+	return url, nil
 }
 
 func init() {
