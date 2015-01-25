@@ -34,7 +34,7 @@ type ParsedVideoUrl struct {
 	VideoType VideoType
 }
 
-type LengthenVideoUrl struct {
+type LengthenedVideoUrl struct {
 	ParsedVideoUrl
 	UrlId   int64
 	UrlPath string
@@ -80,7 +80,7 @@ func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (url *LengthenVideoUrl) String() string {
+func (url *LengthenedVideoUrl) String() string {
 	return ""
 }
 
@@ -96,7 +96,7 @@ func init() {
 	}
 }
 
-func longVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error) {
+func longVideoUrl(videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
 	if videoType != YouTube {
 		return nil, &UnsupportedVideoType{videoType}
 	}
@@ -112,14 +112,14 @@ func longVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error
 	// TODO implement title converter here
 	title := videoRecord.Title
 
-	lengthenVideoUrl := &LengthenVideoUrl{
+	LengthenedVideoUrl := &LengthenedVideoUrl{
 		ParsedVideoUrl{videoId, videoType},
 		0, title,
 	}
 
 	fmt.Println(title)
 
-	return lengthenVideoUrl, nil
+	return LengthenedVideoUrl, nil
 }
 
 func parseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
