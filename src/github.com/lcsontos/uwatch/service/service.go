@@ -37,6 +37,7 @@ type ParsedVideoUrl struct {
 
 type LengthenedVideoUrl struct {
 	ParsedVideoUrl
+	Title   string
 	UrlId   int64
 	UrlPath string
 }
@@ -100,7 +101,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoI
 
 	LengthenedVideoUrl := &LengthenedVideoUrl{
 		ParsedVideoUrl{videoId, videoType},
-		0, title,
+		title, 0, title,
 	}
 
 	// log.Println(title)
