@@ -64,6 +64,14 @@ func (err *UnsupportedVideoType) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
+func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
+	ServeHTTP(rw, req)
+}
+
+func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
+	ServeHTTP(rw, req)
+}
+
 func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
