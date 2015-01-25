@@ -5,6 +5,7 @@ import (
 	"appengine/urlfetch"
 
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -86,24 +87,25 @@ func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
 // instanciate Transport objects. Why on earth do I have to do this???
 // Reference: https://cloud.google.com/appengine/docs/go/urlfetch/
 func getVideoCatalog(videoType service.VideoType, req *http.Request) catalog.VideoCatalog {
-	videoCatalogRegistryRWM.RLock()
+	/*
+		videoCatalogRegistryRWM.RLock()
 
-	if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
+		if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
+			videoCatalogRegistryRWM.RUnlock()
+
+			return videoCatalog
+		}
+
 		videoCatalogRegistryRWM.RUnlock()
 
-		return videoCatalog
-	}
+		videoCatalogRegistryRWM.Lock()
 
-	videoCatalogRegistryRWM.RUnlock()
+		if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
+			videoCatalogRegistryRWM.Unlock()
 
-	videoCatalogRegistryRWM.Lock()
-
-	if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
-		videoCatalogRegistryRWM.Unlock()
-
-		return videoCatalog
-	}
-
+			return videoCatalog
+		}
+	*/
 	context := appengine.NewContext(req)
 
 	transport := &urlfetch.Transport{Context: context}
@@ -114,9 +116,11 @@ func getVideoCatalog(videoType service.VideoType, req *http.Request) catalog.Vid
 		panic(err)
 	}
 
-	videoCatalogRegistry[videoType] = videoCatalog
+	/*
+		videoCatalogRegistry[videoType] = videoCatalog
 
-	videoCatalogRegistryRWM.Unlock()
+		videoCatalogRegistryRWM.Unlock()
+	*/
 
 	return videoCatalog
 }
@@ -132,7 +136,7 @@ func handleError(rw http.ResponseWriter, req *http.Request, err, apperr error, i
 		status = http.StatusInternalServerError
 
 		// TODO Generalize error handling
-		http.Error(rw, "INTERNAL ERROR", status)
+		http.Error(rw, fmt.Sprintf("INTERNAL ERROR: %s", err.Error()), status)
 		log.Printf(err.Error())
 	}
 
