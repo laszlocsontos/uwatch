@@ -3,6 +3,7 @@ package webservice
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -79,9 +80,9 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	lengthenedVideoUrl, err := longVideoUrl(videoTypesLookupMap[videoType], videoId)
 
-	uvte, _ := err.(*UnsupportedVideoType)
+	apperr, isAppErr := err.(*UnsupportedVideoType)
 
-	if handledError(rw, err, uvte) {
+	if handledError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
@@ -125,17 +126,19 @@ func initVideoTypesLookupMap() {
 	}
 }
 
-func handledError(rw http.ResponseWriter, err, apperr error) bool {
+func handledError(rw http.ResponseWriter, req *http.Request, err, apperr error, isAppErr bool) bool {
 	if err == nil {
 		return false
 	}
 
-	if status := http.StatusBadRequest; apperr == nil {
+	if status := http.StatusBadRequest; isAppErr {
+		http.Error(rw, apperr.Error(), status)
+	} else {
 		status = http.StatusInternalServerError
 
-		http.Error(rw, err.Error(), status)
-	} else {
-		http.Error(rw, apperr.Error(), status)
+		// TODO Generalize error handling
+		http.Error(rw, "INTERNAL ERROR", status)
+		log.Printf(err.Error())
 	}
 
 	return true
@@ -162,7 +165,7 @@ func longVideoUrl(videoType VideoType, videoId string) (*LengthenedVideoUrl, err
 		0, title,
 	}
 
-	fmt.Println(title)
+	// log.Println(title)
 
 	return LengthenedVideoUrl, nil
 }
