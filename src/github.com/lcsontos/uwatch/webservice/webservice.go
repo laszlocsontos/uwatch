@@ -28,7 +28,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	videoType, err := service.GetVideoTypeByName(videoTypeName)
 
-	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); handledError(rw, req, err, apperr, isAppErr) {
+	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); handleError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
@@ -36,18 +36,18 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, videoType, videoId)
 
-	wasError := false
+	handledError := false
 
 	switch apperr := err.(type) {
 	case *service.UnsupportedVideoTypeError:
-		wasError = handledError(rw, req, err, apperr, true)
+		handledError = handleError(rw, req, err, apperr, true)
 	case *catalog.NoSuchVideoError:
-		wasError = handledError(rw, req, err, apperr, true)
+		handledError = handleError(rw, req, err, apperr, true)
 	default:
-		wasError = handledError(rw, req, err, apperr, false)
+		handledError = handleError(rw, req, err, apperr, false)
 	}
 
-	if wasError {
+	if handledError {
 		return
 	}
 
@@ -108,7 +108,7 @@ func getVideoCatalog(videoType service.VideoType, req *http.Request) catalog.Vid
 	return videoCatalog
 }
 
-func handledError(rw http.ResponseWriter, req *http.Request, err, apperr error, isAppErr bool) bool {
+func handleError(rw http.ResponseWriter, req *http.Request, err, apperr error, isAppErr bool) bool {
 	if err == nil {
 		return false
 	}
