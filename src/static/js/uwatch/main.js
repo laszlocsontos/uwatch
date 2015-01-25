@@ -7,7 +7,7 @@
   var FIELD_YOUTUBE_URL_CHECK_INTERVAL = 250;
 
   var FIELD_YOUTUBE_URL_MSG = '#youTube-url-msg';
-  var FIELD_YOUTUBE_URL_MSG_TEXT = "This isn't a valid URL"
+  var FIELD_YOUTUBE_URL_MSG_TEXT = "This isn't a valid URL";
   var FIELD_YOUTUBE_URL_MSG_DANGER_CLASS = 'alert-danger';
   var FIELD_YOUTUBE_URL_MSG_SUCCESS_CLASS = 'alert-success';
 
@@ -45,9 +45,9 @@
 
     checkUrl: function(url) {
       if (!url) {
-        this.youTubeUrlMsg.hide()
+        this.youTubeUrlMsg.hide();
 
-        return
+        return;
       }
 
       var youTubeId = this.getYouTubeId(url);
@@ -117,14 +117,14 @@
 
     ensureField: function (data, field, value) {
       if (!data) {
-        return value
+        return value;
       }
 
       if (!data[field]) {
-        data[field] = value
+        data[field] = value;
       }
 
-      return data[field]
+      return data[field];
     },
 
     getMetaData: function(youTubeId) {
@@ -135,11 +135,11 @@
 
       $.get(url)
         .done(function(result) {
-          _this.setMetaData(result);
+          _this.setResult(result);
 
           _this.enableControls();
 
-          _this.showLongUrl(result)
+          _this.showLongUrl(result);
         })
         .fail(function(result) {
           if (console && console.log) {
@@ -196,17 +196,17 @@
     },
 
     parseResult: function(result) {
-      return JSON.parse(result)
+      return JSON.parse(result);
     },
 
-    setMetaData: function(metaData) {
-      var metaData = this.parseResult(metaData)
+    setResult: function(result) {
+      var result = this.parseResult(result)
 
-      var videoId = (metaData && metaData["VideoId"]) ? metaData["VideoId"] : ''
-      var title = (metaData && metaData.Title) ? metaData.Title : '&nbsp;'
+      var videoId = (result && result["VideoId"]) ? result["VideoId"] : '';
+      var title = (result && result.Title) ? result.Title : '';
 
       if (title.length > 25) {
-        title = title.substring(0, 25) + " ... "
+        title = title.substring(0, 25) + " ... ";
       }
 
       // if (console && console.log) {
@@ -215,7 +215,7 @@
       //   console.log(title)
       // }
 
-      this.youTubeTitle.text(title)
+      this.youTubeTitle.text(title);
 
       this.youTubePlayer.loadVideoById({
         videoId: videoId,
@@ -240,7 +240,7 @@
       var urlId = this.ensureField(result, "UrlId", '');
       var urlPath = this.ensureField(result, "UrlPath", '');
 
-      var url = "/" + urlId + "/" + urlPath
+      var url = "/" + urlId + "/" + urlPath;
 
       var html = [];
 
@@ -250,14 +250,14 @@
         "\">",
         window.location.origin,
         url
-      )
+      );
 
-      var url = "/" + urlId + "/" + urlPath
+      var url = "/" + urlId + "/" + urlPath;
 
       this.youTubeUrlMsg.addClass(FIELD_YOUTUBE_URL_MSG_SUCCESS_CLASS);
       this.youTubeUrlMsg.removeClass(FIELD_YOUTUBE_URL_MSG_DANGER_CLASS);
 
-      this.youTubeUrlMsg.empty()
+      this.youTubeUrlMsg.empty();
       this.youTubeUrlMsg.append(html.join(""));
 
       this.youTubeUrlMsg.show();
