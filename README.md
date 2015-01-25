@@ -1,5 +1,9 @@
 # UWatch
 
+### Story
+
+I often receive URLs to funny YouTube videos from colleagues and friends. If I click on one of those, YouTube starts playing it automatically. Before doing so, I'd like to see the context (ie. title) and decide if I really have to watch it or should set it aside.
+
 ### Goal
 
 UWatch is descriptive link generator for streaming video sites (eg. YouTube). The main goal of the project is to assist users in sharing human-readable link.
