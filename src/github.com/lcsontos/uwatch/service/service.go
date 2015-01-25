@@ -51,12 +51,25 @@ var urlPatterns = []urlPattern{
 	urlPattern{YouTube, regexp.MustCompile("http.+youtu\\.be\\/(\\S+)")},
 }
 
+var videoTypesLookupMap = make(map[string]VideoType)
+
+var videoTypesStringMap = map[VideoType]string{
+	YouTube: "YouTube",
+	Vimeo:   "Vimeo",
+	Youku:   "Youku",
+	Rutube:  "Rutube",
+}
+
 func (err *InvalidVideoUrl) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
 }
 
 func (err *UnsupportedVideoType) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
+}
+
+func GetVideoTypeByName(videoTypeName string) VideoType {
+	return videoTypesLookupMap[videoTypeName]
 }
 
 func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
@@ -106,4 +119,18 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 	}
 
 	return parsedVideoUrl, nil
+}
+
+func (videoType VideoType) String() string {
+	return videoTypesStringMap[videoType]
+}
+
+func (url *LengthenedVideoUrl) String() string {
+	return ""
+}
+
+func init() {
+	for videoType, videoTypeName := range videoTypesStringMap {
+		videoTypesLookupMap[videoTypeName] = videoType
+	}
 }
