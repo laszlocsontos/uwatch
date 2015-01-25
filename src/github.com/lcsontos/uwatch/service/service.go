@@ -103,7 +103,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoI
 	// TODO ID is zero until data store is implemented
 	var urlId int64 = 0
 
-	urlPath := fmt.Sprintf("%s/%s", urlId, normalizedTitle)
+	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
 
 	LengthenedVideoUrl := &LengthenedVideoUrl{
 		ParsedVideoUrl{videoId, videoType},

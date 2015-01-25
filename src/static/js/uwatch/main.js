@@ -240,7 +240,7 @@
       var urlId = this.ensureField(result, "UrlId", '');
       var urlPath = this.ensureField(result, "UrlPath", '');
 
-      var url = "/" + urlId + "/" + urlPath;
+      var url = urlId + "/" + urlPath;
 
       var html = [];
 
@@ -251,8 +251,6 @@
         window.location.origin,
         url
       );
-
-      var url = "/" + urlId + "/" + urlPath;
 
       this.youTubeUrlMsg.addClass(FIELD_YOUTUBE_URL_MSG_SUCCESS_CLASS);
       this.youTubeUrlMsg.removeClass(FIELD_YOUTUBE_URL_MSG_DANGER_CLASS);
