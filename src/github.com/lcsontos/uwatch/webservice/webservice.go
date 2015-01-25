@@ -96,10 +96,13 @@ func (url *LengthenedVideoUrl) String() string {
 
 func init() {
 	// Initialize videoTypesLookupMap
-	for videoType, videoTypeName := range videoTypesStringMap {
-		videoTypesLookupMap[videoTypeName] = videoType
-	}
+	initVideoTypesLookupMap()
 
+	// Initialize catalog registry
+	initVideoCatalogRegistry()
+}
+
+func initVideoCatalogRegistry() {
 	var err error
 
 	// TODO create factory for creating wrapper objects to
@@ -108,6 +111,12 @@ func init() {
 
 	if err != nil {
 		panic(err)
+	}
+}
+
+func initVideoTypesLookupMap() {
+	for videoType, videoTypeName := range videoTypesStringMap {
+		videoTypesLookupMap[videoTypeName] = videoType
 	}
 }
 
