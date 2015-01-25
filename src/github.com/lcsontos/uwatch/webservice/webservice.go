@@ -2,10 +2,11 @@ package webservice
 
 import (
 	"fmt"
-	"github.com/lcsontos/uwatch/catalog"
-	"github.com/lcsontos/uwatch/youtube"
 	"net/http"
 	"regexp"
+
+	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/youtube"
 )
 
 type VideoType int

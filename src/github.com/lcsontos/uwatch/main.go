@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/lcsontos/uwatch/webservice"
 	"net/http"
+
+	"github.com/lcsontos/uwatch/webservice"
 )
 
 func init() {

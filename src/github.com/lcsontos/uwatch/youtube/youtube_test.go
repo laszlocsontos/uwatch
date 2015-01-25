@@ -1,10 +1,10 @@
 package youtube
 
 import (
-	"github.com/lcsontos/uwatch/catalog"
-
 	"fmt"
 	"testing"
+
+	"github.com/lcsontos/uwatch/catalog"
 )
 
 func TestSearchByID(t *testing.T) {

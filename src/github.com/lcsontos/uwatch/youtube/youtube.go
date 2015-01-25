@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/lcsontos/uwatch/catalog"
-
 	"google.golang.org/api/googleapi/transport"
 	"google.golang.org/api/youtube/v3"
+
+	"github.com/lcsontos/uwatch/catalog"
 )
 
 const _DEVELOPER_KEY = "AIzaSyDdkE9YERsVIFgH-l7mTxpBgHLDkmkPyMA"
