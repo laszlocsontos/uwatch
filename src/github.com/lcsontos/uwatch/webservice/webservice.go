@@ -51,7 +51,7 @@ var urlPatterns = []urlPattern{
 	urlPattern{YouTube, regexp.MustCompile("http.+youtu\\.be\\/(\\S+)")},
 }
 
-var videoCatalog catalog.VideoCatalog
+var videoCatalogRegistry = make(map[VideoType]catalog.VideoCatalog)
 
 func (err *InvalidVideoUrl) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
@@ -65,6 +65,8 @@ func LongVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error
 	if videoType != YouTube {
 		return nil, &UnsupportedVideoType{videoType}
 	}
+
+	videoCatalog := videoCatalogRegistry[videoType]
 
 	videoRecord, err := videoCatalog.SearchByID(videoId)
 
@@ -120,7 +122,9 @@ func (url *LengthenVideoUrl) String() string {
 func init() {
 	var err error
 
-	videoCatalog, err = youtube.New()
+	// TODO create factory for creating wrapper objects to
+	// video sharing services
+	videoCatalogRegistry[YouTube], err = youtube.New()
 
 	if err != nil {
 		panic(err)
