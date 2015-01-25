@@ -6,6 +6,7 @@ import (
 )
 
 type VideoRecord struct {
+	Id          int64
 	Description string
 	PublishedAt time.Time
 	VideoId     string
