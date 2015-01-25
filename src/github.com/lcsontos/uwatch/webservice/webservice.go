@@ -14,7 +14,7 @@ import (
 type VideoType int
 
 const (
-	YouTube = (iota)
+	YouTube VideoType = (iota)
 
 	// Reserved for future implementation
 	Vimeo
@@ -56,6 +56,12 @@ var urlPatterns = []urlPattern{
 
 var videoCatalogRegistry = make(map[VideoType]catalog.VideoCatalog)
 
+var videoTypesLookupMap = make(map[string]VideoType)
+
+var videoTypesStringMap = map[VideoType]string{
+	YouTube: "YouTube", Vimeo: "Vimeo", Youku: "Youku", Rutube: "Rutube",
+}
+
 func (err *InvalidVideoUrl) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
 }
@@ -80,11 +86,20 @@ func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func (videoType VideoType) String() string {
+	return videoTypesStringMap[videoType]
+}
+
 func (url *LengthenedVideoUrl) String() string {
 	return ""
 }
 
 func init() {
+	// Initialize videoTypesLookupMap
+	for videoType, videoTypeName := range videoTypesStringMap {
+		videoTypesLookupMap[videoTypeName] = videoType
+	}
+
 	var err error
 
 	// TODO create factory for creating wrapper objects to
