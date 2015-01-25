@@ -1,11 +1,15 @@
 package webservice
 
 import (
+	"appengine"
+	"appengine/urlfetch"
+
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"regexp"
+	"sync"
 
 	"github.com/gorilla/mux"
 
@@ -58,6 +62,8 @@ var urlPatterns = []urlPattern{
 
 var videoCatalogRegistry = make(map[VideoType]catalog.VideoCatalog)
 
+var videoCatalogRegistryRWM sync.RWMutex
+
 var videoTypesLookupMap = make(map[string]VideoType)
 
 var videoTypesStringMap = map[VideoType]string{
@@ -78,7 +84,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	videoType := vars["videoType"]
 	videoId := vars["videoId"]
 
-	lengthenedVideoUrl, err := longVideoUrl(videoTypesLookupMap[videoType], videoId)
+	lengthenedVideoUrl, err := longVideoUrl(videoTypesLookupMap[videoType], videoId, req)
 
 	apperr, isAppErr := err.(*UnsupportedVideoType)
 
@@ -105,25 +111,64 @@ func init() {
 	initVideoTypesLookupMap()
 
 	// Initialize catalog registry
-	initVideoCatalogRegistry()
+	// initVideoCatalogRegistry()
 }
 
-func initVideoCatalogRegistry() {
-	var err error
+// func initVideoCatalogRegistry() {
+// 	var err error
 
-	// TODO create factory for creating wrapper objects to
-	// video sharing services
-	videoCatalogRegistry[YouTube], err = youtube.New()
+// 	// TODO create factory for creating wrapper objects to
+// 	// video sharing services
+// 	videoCatalogRegistry[YouTube], err = youtube.New()
 
-	if err != nil {
-		panic(err)
-	}
-}
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
 func initVideoTypesLookupMap() {
 	for videoType, videoTypeName := range videoTypesStringMap {
 		videoTypesLookupMap[videoTypeName] = videoType
 	}
+}
+
+// I needed this "hack", because app engine requires a http.Request object to
+// instanciate Transport objects. Why on earth do I have to do this???
+// Reference: https://cloud.google.com/appengine/docs/go/urlfetch/
+func getVideoCatalog(videoType VideoType, req *http.Request) catalog.VideoCatalog {
+	videoCatalogRegistryRWM.RLock()
+
+	if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
+		videoCatalogRegistryRWM.RUnlock()
+
+		return videoCatalog
+	}
+
+	videoCatalogRegistryRWM.RUnlock()
+
+	videoCatalogRegistryRWM.Lock()
+
+	if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
+		videoCatalogRegistryRWM.Unlock()
+
+		return videoCatalog
+	}
+
+	context := appengine.NewContext(req)
+
+	transport := &urlfetch.Transport{Context: context}
+
+	videoCatalog, err := youtube.NewWithRoundTripper(transport)
+
+	if err != nil {
+		panic(err)
+	}
+
+	videoCatalogRegistry[videoType] = videoCatalog
+
+	videoCatalogRegistryRWM.Unlock()
+
+	return videoCatalog
 }
 
 func handledError(rw http.ResponseWriter, req *http.Request, err, apperr error, isAppErr bool) bool {
@@ -144,12 +189,12 @@ func handledError(rw http.ResponseWriter, req *http.Request, err, apperr error, 
 	return true
 }
 
-func longVideoUrl(videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
+func longVideoUrl(videoType VideoType, videoId string, req *http.Request) (*LengthenedVideoUrl, error) {
 	if videoType != YouTube {
 		return nil, &UnsupportedVideoType{videoType}
 	}
 
-	videoCatalog := videoCatalogRegistry[videoType]
+	videoCatalog := getVideoCatalog(videoType, req)
 
 	videoRecord, err := videoCatalog.SearchByID(videoId)
 

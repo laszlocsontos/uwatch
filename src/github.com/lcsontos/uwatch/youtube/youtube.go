@@ -19,8 +19,19 @@ type Service struct {
 }
 
 func New() (*Service, error) {
+	service, err := NewWithRoundTripper(nil)
+
+	return service, err
+}
+
+func NewWithRoundTripper(roundTripper http.RoundTripper) (*Service, error) {
+	transport := &transport.APIKey{
+		Key:       _DEVELOPER_KEY,
+		Transport: roundTripper,
+	}
+
 	client := &http.Client{
-		Transport: &transport.APIKey{Key: _DEVELOPER_KEY},
+		Transport: transport,
 	}
 
 	service, err := youtube.New(client)
