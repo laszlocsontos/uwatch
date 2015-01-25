@@ -1,8 +1,10 @@
-package webservice
+package service
 
 import (
 	"reflect"
 	"testing"
+
+	"github.com/lcsontos/uwatch/youtube"
 )
 
 type longVideoUrlTestCase struct {
@@ -47,7 +49,14 @@ var parseVideoUrlData = []parseVideoUrlTestCase{
 
 func TestLongVideoUrl(t *testing.T) {
 	for _, data := range longVideoUrlData {
-		result, err := longVideoUrl(data.videoType, data.videoId)
+
+		videoCatalog, err := youtube.New()
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		result, err := LongVideoUrl(videoCatalog, data.videoType, data.videoId)
 
 		if err != nil && data.want != _EMPTY_STRING {
 			t.Fatal(err)
@@ -70,7 +79,7 @@ func TestLongVideoUrl(t *testing.T) {
 
 func TestParseVideoUrl(t *testing.T) {
 	for _, data := range parseVideoUrlData {
-		result, err := parseVideoUrl(data.videoUrl)
+		result, err := ParseVideoUrl(data.videoUrl)
 
 		if err != nil && data.want != nil {
 			t.Fatal(err)
