@@ -12,9 +12,10 @@
   var FIELD_YOUTUBE_URL_MSG_SUCCESS_CLASS = 'alert-success';
 
   var YOUTUBE_API = '<script src="https://www.youtube.com/iframe_api" />';
-  var YOUTUBE_LONG_VIDEO_URL = "api/long_video_url"
+  var YOUTUBE_LONG_VIDEO_URL = "/api/long_video_url"
 
-  var YOUTUBE_URL_FIRST = 'http://www.youtube.com/watch?v=pNuZIZOya78'
+  // var YOUTUBE_URL_FIRST = 'http://www.youtube.com/watch?v=pNuZIZOya78'
+
   var YOUTUBE_URL_REGEX = /http.+youtube\.com\/watch\?v\=(\w+)/;
 
   var UWatch = function() {
@@ -32,7 +33,9 @@
     _this.youTubeTitle = $(FIELD_YOUTUBE_TITLE);
 
     _this.youTubeUrl = $(FIELD_YOUTUBE_URL);
-    _this.youTubeUrl.val(YOUTUBE_URL_FIRST);
+    _this.youTubeUrlFirst = _this.youTubeUrl.val()
+
+    // _this.youTubeUrl.val(YOUTUBE_URL_FIRST);
 
     _this.youTubeUrlMsg = $(FIELD_YOUTUBE_URL_MSG);
     _this.youTubeUrlMsg.hide();
@@ -68,7 +71,8 @@
     createYouTubeAPI: function() {
       var _this = this;
 
-      var youTubeId = _this.getYouTubeId(YOUTUBE_URL_FIRST);
+      // var youTubeId = _this.getYouTubeId(YOUTUBE_URL_FIRST);
+      var youTubeId = _this.getYouTubeId(_this.youTubeUrlFirst);
 
       var youTubeEvents = {
         onReady: $.proxy(_this.onYouTubePlayerReady, _this),

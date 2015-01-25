@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/lcsontos/uwatch/html"
 	"github.com/lcsontos/uwatch/util"
 	"github.com/lcsontos/uwatch/webservice"
 )
@@ -35,6 +36,10 @@ func init() {
 	router.HandleFunc(
 		"/api/parse_video_url",
 		handleSafely(webservice.GetParseVideoUrl)).Methods("POST")
+
+	router.HandleFunc(
+		"/{urlId}/{urlPath}",
+		handleSafely(html.ProcessTemplate)).Methods("GET")
 
 	http.Handle("/", router)
 }
