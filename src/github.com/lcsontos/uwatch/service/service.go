@@ -22,7 +22,7 @@ const (
 	unknown = -1
 )
 
-type InvalidVideoUrl struct {
+type InvalidVideoUrlError struct {
 	VideoUrl string
 }
 
@@ -37,7 +37,7 @@ type LengthenedVideoUrl struct {
 	UrlPath string
 }
 
-type UnsupportedVideoType struct {
+type UnsupportedVideoTypeError struct {
 	VideoType VideoType
 }
 
@@ -60,11 +60,11 @@ var videoTypesStringMap = map[VideoType]string{
 	Rutube:  "Rutube",
 }
 
-func (err *InvalidVideoUrl) Error() string {
+func (err *InvalidVideoUrlError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
 }
 
-func (err *UnsupportedVideoType) Error() string {
+func (err *UnsupportedVideoTypeError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
@@ -74,7 +74,7 @@ func GetVideoTypeByName(videoTypeName string) VideoType {
 
 func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
 	if videoType != YouTube {
-		return nil, &UnsupportedVideoType{videoType}
+		return nil, &UnsupportedVideoTypeError{videoType}
 	}
 
 	videoRecord, err := videoCatalog.SearchByID(videoId)
@@ -98,7 +98,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoI
 
 func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 	if videoUrl == "" {
-		return nil, &InvalidVideoUrl{""}
+		return nil, &InvalidVideoUrlError{""}
 	}
 
 	parsedVideoUrl := &ParsedVideoUrl{VideoType: unknown}
@@ -115,7 +115,7 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 	}
 
 	if parsedVideoUrl.VideoType == unknown {
-		return nil, &InvalidVideoUrl{videoUrl}
+		return nil, &InvalidVideoUrlError{videoUrl}
 	}
 
 	return parsedVideoUrl, nil

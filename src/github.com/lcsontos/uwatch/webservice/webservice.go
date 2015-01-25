@@ -35,7 +35,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	wasError := false
 
 	switch apperr := err.(type) {
-	case *service.UnsupportedVideoType:
+	case *service.UnsupportedVideoTypeError:
 		wasError = handledError(rw, req, err, apperr, true)
 	case *catalog.NoSuchVideoError:
 		wasError = handledError(rw, req, err, apperr, true)
