@@ -34,8 +34,8 @@ func init() {
 		handleSafely(webservice.GetLongVideoUrl)).Methods("GET")
 
 	router.HandleFunc(
-		"/api/parse_video_url/{videoUrl}",
-		handleSafely(webservice.GetParseVideoUrl)).Methods("GET")
+		"/api/parse_video_url",
+		handleSafely(webservice.GetParseVideoUrl)).Methods("POST")
 
 	http.Handle("/", router)
 }

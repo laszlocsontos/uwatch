@@ -55,6 +55,19 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 }
 
 func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+
+	videoUrl := vars["videoUrl"]
+
+	log.Printf("videoUrl=%s", videoUrl)
+
+	parsedVideoUrl, err := service.ParseVideoUrl(videoUrl)
+
+	if apperr, isAppErr := err.(*service.InvalidVideoUrlError); handleError(rw, req, err, apperr, isAppErr) {
+		return
+	}
+
+	json.NewEncoder(rw).Encode(*parsedVideoUrl)
 }
 
 // func init() {
