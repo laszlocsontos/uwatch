@@ -47,7 +47,7 @@ var parseVideoUrlData = []parseVideoUrlTestCase{
 
 func TestLongVideoUrl(t *testing.T) {
 	for _, data := range longVideoUrlData {
-		result, err := LongVideoUrl(data.videoType, data.videoId)
+		result, err := longVideoUrl(data.videoType, data.videoId)
 
 		if err != nil && data.want != _EMPTY_STRING {
 			t.Fatal(err)
@@ -70,7 +70,7 @@ func TestLongVideoUrl(t *testing.T) {
 
 func TestParseVideoUrl(t *testing.T) {
 	for _, data := range parseVideoUrlData {
-		result, err := ParseVideoUrl(data.videoUrl)
+		result, err := parseVideoUrl(data.videoUrl)
 
 		if err != nil && data.want != nil {
 			t.Fatal(err)

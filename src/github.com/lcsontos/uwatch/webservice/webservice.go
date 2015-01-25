@@ -64,7 +64,31 @@ func (err *UnsupportedVideoType) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
-func LongVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error) {
+func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+
+	for key, value := range vars {
+		fmt.Fprintf(rw, "Key: %v, Value: %v\n", key, value)
+	}
+}
+
+func (url *LengthenVideoUrl) String() string {
+	return ""
+}
+
+func init() {
+	var err error
+
+	// TODO create factory for creating wrapper objects to
+	// video sharing services
+	videoCatalogRegistry[YouTube], err = youtube.New()
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func longVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error) {
 	if videoType != YouTube {
 		return nil, &UnsupportedVideoType{videoType}
 	}
@@ -90,7 +114,7 @@ func LongVideoUrl(videoType VideoType, videoId string) (*LengthenVideoUrl, error
 	return lengthenVideoUrl, nil
 }
 
-func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
+func parseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 	if videoUrl == "" {
 		return nil, &InvalidVideoUrl{""}
 	}
@@ -113,28 +137,4 @@ func ParseVideoUrl(videoUrl string) (*ParsedVideoUrl, error) {
 	}
 
 	return parsedVideoUrl, nil
-}
-
-func ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-
-	for key, value := range vars {
-		fmt.Fprintf(rw, "Key: %v, Value: %v\n", key, value)
-	}
-}
-
-func (url *LengthenVideoUrl) String() string {
-	return ""
-}
-
-func init() {
-	var err error
-
-	// TODO create factory for creating wrapper objects to
-	// video sharing services
-	videoCatalogRegistry[YouTube], err = youtube.New()
-
-	if err != nil {
-		panic(err)
-	}
 }
