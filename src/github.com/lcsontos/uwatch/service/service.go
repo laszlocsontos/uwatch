@@ -6,6 +6,7 @@ import (
 	"regexp"
 
 	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/normalizer"
 )
 
 type VideoType int
@@ -96,15 +97,18 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoI
 		return nil, err
 	}
 
-	// TODO implement title converter here
+	normalizedTitle := normalizer.Normalize(videoRecord.Title)
 	title := videoRecord.Title
+
+	// TODO ID is zero until data store is implemented
+	var urlId int64 = 0
+
+	urlPath := fmt.Sprintf("%s/%s", urlId, normalizedTitle)
 
 	LengthenedVideoUrl := &LengthenedVideoUrl{
 		ParsedVideoUrl{videoId, videoType},
-		title, 0, title,
+		title, urlId, urlPath,
 	}
-
-	// log.Println(title)
 
 	return LengthenedVideoUrl, nil
 }
