@@ -30,7 +30,7 @@ func init() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc(
-		"/api/long_video_url/{videoType}/{videoId}",
+		"/api/long_video_url/{videoTypeName}/{videoId}",
 		handleSafely(webservice.GetLongVideoUrl)).Methods("GET")
 
 	router.HandleFunc(

@@ -23,14 +23,18 @@ var videoCatalogRegistryRWM sync.RWMutex
 func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
-	videoType := vars["videoType"]
+	videoTypeName := vars["videoTypeName"]
 	videoId := vars["videoId"]
 
-	vt := service.GetVideoTypeByName(videoType)
+	videoType, err := service.GetVideoTypeByName(videoTypeName)
 
-	videoCatalog := getVideoCatalog(vt, req)
+	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); handledError(rw, req, err, apperr, isAppErr) {
+		return
+	}
 
-	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, vt, videoId)
+	videoCatalog := getVideoCatalog(videoType, req)
+
+	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, videoType, videoId)
 
 	wasError := false
 

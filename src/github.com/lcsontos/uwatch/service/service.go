@@ -26,6 +26,10 @@ type InvalidVideoUrlError struct {
 	VideoUrl string
 }
 
+type InvalidVideoTypeNameError struct {
+	VideoTypeName string
+}
+
 type ParsedVideoUrl struct {
 	VideoId   string
 	VideoType VideoType
@@ -64,12 +68,20 @@ func (err *InvalidVideoUrlError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video URL", err.VideoUrl)
 }
 
+func (err *InvalidVideoTypeNameError) Error() string {
+	return fmt.Sprintf("\"%s\" is an invalid video name", err.VideoTypeName)
+}
+
 func (err *UnsupportedVideoTypeError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
-func GetVideoTypeByName(videoTypeName string) VideoType {
-	return videoTypesLookupMap[videoTypeName]
+func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
+	if videoType, ok := videoTypesLookupMap[videoTypeName]; !ok {
+		return unknown, &InvalidVideoTypeNameError{videoTypeName}
+	} else {
+		return videoType, nil
+	}
 }
 
 func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType VideoType, videoId string) (*LengthenedVideoUrl, error) {
