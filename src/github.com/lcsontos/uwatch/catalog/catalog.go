@@ -24,18 +24,6 @@ import (
 
 type VideoType int
 
-const (
-	YouTube VideoType = (iota)
-
-	// Reserved for future implementation
-	Vimeo
-	Youku
-	Rutube
-
-	// Internal use only!
-	Unknown = -1
-)
-
 type InvalidVideoTypeNameError struct {
 	VideoTypeName string
 }
@@ -68,6 +56,18 @@ type VideoCatalog interface {
 	SearchByID(videoId string) (*VideoRecord, error)
 	SearchByTitle(title string, maxResults int64) ([]VideoRecord, error)
 }
+
+const (
+	YouTube VideoType = (iota)
+
+	// Reserved for future implementation
+	Vimeo
+	Youku
+	Rutube
+
+	// Internal use only!
+	Unknown = -1
+)
 
 var videoTypesLookupMap = make(map[string]VideoType)
 
