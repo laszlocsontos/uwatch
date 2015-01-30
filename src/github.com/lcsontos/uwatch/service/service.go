@@ -53,7 +53,7 @@ func (err *UnsupportedVideoTypeError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
-func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType catalog.VideoType, videoId string, req *http.Request) (*catalog.LengthenedVideoUrl, error) {
+func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType catalog.VideoType, videoId string, req *http.Request) (*catalog.LongVideoUrl, error) {
 	if videoType != catalog.YouTube {
 		return nil, &UnsupportedVideoTypeError{videoType}
 	}
@@ -74,35 +74,35 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType catalog.VideoType
 
 	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
 
-	LengthenedVideoUrl := &catalog.LengthenedVideoUrl{
-		catalog.ParsedVideoUrl{videoId, videoType},
+	longVideoUrl := &catalog.LongVideoUrl{
+		catalog.VideoKey{videoId, videoType},
 		videoRecord.Title, urlId, urlPath,
 	}
 
-	return LengthenedVideoUrl, nil
+	return longVideoUrl, nil
 }
 
-func ParseVideoUrl(videoUrl string) (*catalog.ParsedVideoUrl, error) {
+func ParseVideoUrl(videoUrl string) (*catalog.VideoKey, error) {
 	if videoUrl == "" {
 		return nil, &InvalidVideoUrlError{""}
 	}
 
-	parsedVideoUrl := &catalog.ParsedVideoUrl{VideoType: catalog.Unknown}
+	videoKey := &catalog.VideoKey{VideoType: catalog.Unknown}
 
 	for _, urlPattern := range urlPatterns {
 		matches := urlPattern.pattern.FindStringSubmatch(videoUrl)
 
 		if matches != nil {
-			parsedVideoUrl.VideoId = matches[1]
-			parsedVideoUrl.VideoType = urlPattern.videoType
+			videoKey.VideoId = matches[1]
+			videoKey.VideoType = urlPattern.videoType
 
 			break
 		}
 	}
 
-	if parsedVideoUrl.VideoType == catalog.Unknown {
+	if videoKey.VideoType == catalog.Unknown {
 		return nil, &InvalidVideoUrlError{videoUrl}
 	}
 
-	return parsedVideoUrl, nil
+	return videoKey, nil
 }

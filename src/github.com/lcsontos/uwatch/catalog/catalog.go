@@ -28,13 +28,13 @@ type InvalidVideoTypeNameError struct {
 	VideoTypeName string
 }
 
-type ParsedVideoUrl struct {
+type VideoKey struct {
 	VideoId   string
 	VideoType VideoType
 }
 
-type LengthenedVideoUrl struct {
-	ParsedVideoUrl
+type LongVideoUrl struct {
+	VideoKey
 	Title   string
 	UrlId   int64
 	UrlPath string
@@ -98,7 +98,7 @@ func NewVideoRecord(videoId, title, description string, publishedAt time.Time) *
 	return &VideoRecord{Description: description, PublishedAt: publishedAt, VideoId: videoId, Title: title}
 }
 
-func (url *LengthenedVideoUrl) String() string {
+func (url *LongVideoUrl) String() string {
 	return ""
 }
 

@@ -79,13 +79,13 @@ func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	log.Printf("videoUrl=%s", videoUrl)
 
-	parsedVideoUrl, err := service.ParseVideoUrl(videoUrl)
+	videoKey, err := service.ParseVideoUrl(videoUrl)
 
 	if apperr, isAppErr := err.(*service.InvalidVideoUrlError); util.HandleError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
-	json.NewEncoder(rw).Encode(*parsedVideoUrl)
+	json.NewEncoder(rw).Encode(*videoKey)
 }
 
 // func init() {
