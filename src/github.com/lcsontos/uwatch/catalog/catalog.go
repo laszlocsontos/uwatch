@@ -22,6 +22,36 @@ import (
 	"time"
 )
 
+type VideoType int
+
+const (
+	YouTube VideoType = (iota)
+
+	// Reserved for future implementation
+	Vimeo
+	Youku
+	Rutube
+
+	// Internal use only!
+	Unknown = -1
+)
+
+type InvalidVideoTypeNameError struct {
+	VideoTypeName string
+}
+
+type ParsedVideoUrl struct {
+	VideoId   string
+	VideoType VideoType
+}
+
+type LengthenedVideoUrl struct {
+	ParsedVideoUrl
+	Title   string
+	UrlId   int64
+	UrlPath string
+}
+
 type VideoRecord struct {
 	Id          int64
 	Description string
@@ -39,14 +69,49 @@ type VideoCatalog interface {
 	SearchByTitle(title string, maxResults int64) ([]VideoRecord, error)
 }
 
+var videoTypesLookupMap = make(map[string]VideoType)
+
+var videoTypesStringMap = map[VideoType]string{
+	YouTube: "YouTube",
+	Vimeo:   "Vimeo",
+	Youku:   "Youku",
+	Rutube:  "Rutube",
+}
+
+func (err *InvalidVideoTypeNameError) Error() string {
+	return fmt.Sprintf("\"%s\" is an invalid video name", err.VideoTypeName)
+}
+
 func (err *NoSuchVideoError) Error() string {
 	return fmt.Sprintf("Video with Id %s does not exist", err.VideoId)
+}
+
+func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
+	if videoType, ok := videoTypesLookupMap[videoTypeName]; !ok {
+		return Unknown, &InvalidVideoTypeNameError{videoTypeName}
+	} else {
+		return videoType, nil
+	}
 }
 
 func NewVideoRecord(videoId, title, description string, publishedAt time.Time) *VideoRecord {
 	return &VideoRecord{Description: description, PublishedAt: publishedAt, VideoId: videoId, Title: title}
 }
 
+func (url *LengthenedVideoUrl) String() string {
+	return ""
+}
+
+func (videoType VideoType) String() string {
+	return videoTypesStringMap[videoType]
+}
+
 func (videoRecord *VideoRecord) String() string {
 	return fmt.Sprintf("[%v] %v: %v", videoRecord.VideoId, videoRecord.Title, videoRecord.Description)
+}
+
+func init() {
+	for videoType, videoTypeName := range videoTypesStringMap {
+		videoTypesLookupMap[videoTypeName] = videoType
+	}
 }

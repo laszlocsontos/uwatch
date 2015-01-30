@@ -34,7 +34,7 @@ import (
 	"github.com/lcsontos/uwatch/youtube"
 )
 
-var videoCatalogRegistry = make(map[service.VideoType]catalog.VideoCatalog)
+var videoCatalogRegistry = make(map[catalog.VideoType]catalog.VideoCatalog)
 
 var videoCatalogRegistryRWM sync.RWMutex
 
@@ -44,9 +44,9 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	videoTypeName := vars["videoTypeName"]
 	videoId := vars["videoId"]
 
-	videoType, err := service.GetVideoTypeByName(videoTypeName)
+	videoType, err := catalog.GetVideoTypeByName(videoTypeName)
 
-	if apperr, isAppErr := err.(*service.InvalidVideoTypeNameError); util.HandleError(rw, req, err, apperr, isAppErr) {
+	if apperr, isAppErr := err.(*catalog.InvalidVideoTypeNameError); util.HandleError(rw, req, err, apperr, isAppErr) {
 		return
 	}
 
@@ -103,7 +103,7 @@ func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
 // I needed this "hack", because app engine requires a http.Request object to
 // instanciate Transport objects. Why on earth do I have to do this???
 // Reference: https://cloud.google.com/appengine/docs/go/urlfetch/
-func getVideoCatalog(videoType service.VideoType, req *http.Request) catalog.VideoCatalog {
+func getVideoCatalog(videoType catalog.VideoType, req *http.Request) catalog.VideoCatalog {
 	/*
 		videoCatalogRegistryRWM.RLock()
 
