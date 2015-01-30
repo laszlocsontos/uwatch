@@ -53,12 +53,14 @@ func (err *UnsupportedVideoTypeError) Error() string {
 	return fmt.Sprintf("\"%s\" is an invalid video type", err.VideoType)
 }
 
-func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType catalog.VideoType, videoId string, req *http.Request) (*catalog.LongVideoUrl, error) {
+func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey, req *http.Request) (*catalog.LongVideoUrl, error) {
+	videoType := videoKey.VideoType
+
 	if videoType != catalog.YouTube {
 		return nil, &UnsupportedVideoTypeError{videoType}
 	}
 
-	videoRecord, err := videoCatalog.SearchByID(videoId)
+	videoRecord, err := videoCatalog.SearchByID(videoKey.VideoId)
 
 	if err != nil {
 		return nil, err
@@ -75,8 +77,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoType catalog.VideoType
 	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
 
 	longVideoUrl := &catalog.LongVideoUrl{
-		catalog.VideoKey{videoId, videoType},
-		videoRecord.Title, urlId, urlPath,
+		videoKey, videoRecord.Title, urlId, urlPath,
 	}
 
 	return longVideoUrl, nil

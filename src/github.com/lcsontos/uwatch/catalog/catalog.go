@@ -34,7 +34,7 @@ type VideoKey struct {
 }
 
 type LongVideoUrl struct {
-	VideoKey
+	*VideoKey
 	Title   string
 	UrlId   int64
 	UrlPath string

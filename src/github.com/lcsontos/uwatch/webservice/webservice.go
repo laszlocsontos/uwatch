@@ -52,7 +52,9 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 
 	videoCatalog := getVideoCatalog(videoType, req)
 
-	lengthenedVideoUrl, err := service.LongVideoUrl(videoCatalog, videoType, videoId, req)
+	videoKey := &catalog.VideoKey{VideoId: videoId, VideoType: videoType}
+
+	longVideoUrl, err := service.LongVideoUrl(videoCatalog, videoKey, req)
 
 	handledError := false
 
@@ -69,7 +71,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	json.NewEncoder(rw).Encode(*lengthenedVideoUrl)
+	json.NewEncoder(rw).Encode(*longVideoUrl)
 }
 
 func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
