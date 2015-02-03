@@ -34,18 +34,22 @@ type VideoKey struct {
 }
 
 type LongVideoUrl struct {
+	Id int64
 	*VideoKey
-	Title   string
-	UrlId   int64
-	UrlPath string
+
+	CreatedAt   time.Time
+	PublishedAt time.Time
+
+	NormalizedTitle string
+	UrlPath         string
 }
 
 type VideoRecord struct {
-	Id          int64
-	Description string
+	*VideoKey
+
 	PublishedAt time.Time
-	VideoId     string
-	Title       string
+
+	Title string
 }
 
 type NoSuchVideoError struct {
@@ -94,8 +98,9 @@ func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
 	}
 }
 
-func NewVideoRecord(videoId, title, description string, publishedAt time.Time) *VideoRecord {
-	return &VideoRecord{Description: description, PublishedAt: publishedAt, VideoId: videoId, Title: title}
+func NewVideoRecord(videoKey *VideoKey, publishedAt time.Time, title string) *VideoRecord {
+	return &VideoRecord{
+		VideoKey: videoKey, PublishedAt: publishedAt, Title: title}
 }
 
 func (url *LongVideoUrl) String() string {
@@ -107,7 +112,7 @@ func (videoType VideoType) String() string {
 }
 
 func (videoRecord *VideoRecord) String() string {
-	return fmt.Sprintf("[%v] %v: %v", videoRecord.VideoId, videoRecord.Title, videoRecord.Description)
+	return fmt.Sprintf("[%v] %v: %v", videoRecord.VideoId, videoRecord.Title)
 }
 
 func init() {

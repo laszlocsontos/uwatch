@@ -77,7 +77,10 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
 
 	longVideoUrl := &catalog.LongVideoUrl{
-		videoKey, videoRecord.Title, urlId, urlPath,
+		Id:              urlId,
+		VideoKey:        videoKey,
+		NormalizedTitle: normalizedTitle,
+		UrlPath:         urlPath,
 	}
 
 	return longVideoUrl, nil

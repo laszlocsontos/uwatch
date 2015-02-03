@@ -49,9 +49,6 @@ func PutVideoRecord(videoRecord *catalog.VideoRecord, req *http.Request) (int64,
 
 	key := datastore.NewIncompleteKey(context, _KIND, nil)
 
-	// Avoid error: Property Description is too long. Maximum length is 500
-	videoRecord.Description = ""
-
 	key, err := datastore.Put(context, key, videoRecord)
 
 	if err != nil {

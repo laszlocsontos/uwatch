@@ -73,17 +73,18 @@ func (service Service) SearchByID(videoId string) (*catalog.VideoRecord, error) 
 		return nil, &catalog.NoSuchVideoError{videoId}
 	}
 
-	videoRecord := catalog.VideoRecord{}
+	videoId = response.Items[0].Id
 
-	videoRecord.VideoId = response.Items[0].Id
-	videoRecord.Description = response.Items[0].Snippet.Description
+	videoKey := &catalog.VideoKey{videoId, catalog.YouTube}
+
+	title := response.Items[0].Snippet.Title
 
 	// TODO implement time conversion
 	// videoRecord.PublishedAt = response.Items[0].Snippet.PublishedAt
 
-	videoRecord.Title = response.Items[0].Snippet.Title
+	videoRecord := catalog.NewVideoRecord(videoKey, time.Now(), title)
 
-	return &videoRecord, nil
+	return videoRecord, nil
 }
 
 func (service Service) SearchByTitle(title string, maxResults int64) ([]catalog.VideoRecord, error) {
@@ -108,8 +109,9 @@ func (service Service) SearchByTitle(title string, maxResults int64) ([]catalog.
 		for index, item := range items {
 			// TODO implement time conversion
 
-			videoRecord := catalog.NewVideoRecord(
-				item.Id.VideoId, item.Snippet.Title, item.Snippet.Description, time.Now())
+			videoKey := &catalog.VideoKey{item.Id.VideoId, catalog.YouTube}
+
+			videoRecord := catalog.NewVideoRecord(videoKey, time.Now(), item.Snippet.Title)
 
 			videoRecords[index] = *videoRecord
 		}
