@@ -98,6 +98,14 @@ func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
 	}
 }
 
+func NewLongVideoUrl(videoRecord *VideoRecord) *LongVideoUrl {
+	return &LongVideoUrl{
+		VideoKey:    videoRecord.VideoKey,
+		CreatedAt:   time.Now(),
+		PublishedAt: videoRecord.PublishedAt,
+	}
+}
+
 func NewVideoRecord(videoKey *VideoKey, publishedAt time.Time, title string) *VideoRecord {
 	return &VideoRecord{
 		VideoKey: videoKey, PublishedAt: publishedAt, Title: title}

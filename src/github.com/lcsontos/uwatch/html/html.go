@@ -78,14 +78,23 @@ func getPathTokens(url *url.URL) (int64, string, error) {
 	return urlId, normalizedTitle, nil
 }
 
+func getVideoStore(req *http.Request) store.VideoStore {
+	// TODO
+	return nil
+}
+
 func getVideoUrl(urlId int64, req *http.Request) (string, error) {
-	videoRecord, err := store.GetVideoRecord(urlId, req)
+	videoStore := getVideoStore(req)
+
+	longVideoUrl, err := videoStore.FindLongVideoUrlByID(urlId)
 
 	if err != nil {
 		return "", err
 	}
 
-	url := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoRecord.VideoId)
+	// TODO
+
+	url := fmt.Sprintf("https://www.youtube.com/watch?v=%s", longVideoUrl.VideoKey.VideoId)
 
 	return url, nil
 }

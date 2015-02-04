@@ -60,7 +60,27 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 		return nil, &UnsupportedVideoTypeError{videoType}
 	}
 
+	videoStore := getVideoStore(req)
+
+	longVideoUrl, err := videoStore.FindLongVideoUrlByVideoKey(videoKey)
+
+	if _, isAppErr := err.(*store.NoSuchLongVideoUrl); !isAppErr {
+		return nil, err
+	}
+
+	if longVideoUrl != nil {
+		return longVideoUrl, nil
+	}
+
 	videoRecord, err := videoCatalog.SearchByID(videoKey.VideoId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	longVideoUrl = catalog.NewLongVideoUrl(videoRecord)
+
+	err = videoStore.SaveLongVideoUrl(longVideoUrl)
 
 	if err != nil {
 		return nil, err
@@ -68,20 +88,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 
 	normalizedTitle := normalizer.Normalize(videoRecord.Title)
 
-	urlId, err := store.PutVideoRecord(videoRecord, req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	urlPath := fmt.Sprintf("%d/%s", urlId, normalizedTitle)
-
-	longVideoUrl := &catalog.LongVideoUrl{
-		Id:              urlId,
-		VideoKey:        videoKey,
-		NormalizedTitle: normalizedTitle,
-		UrlPath:         urlPath,
-	}
+	longVideoUrl.UrlPath = fmt.Sprintf("%d/%s", longVideoUrl.Id, normalizedTitle)
 
 	return longVideoUrl, nil
 }
@@ -109,4 +116,9 @@ func ParseVideoUrl(videoUrl string) (*catalog.VideoKey, error) {
 	}
 
 	return videoKey, nil
+}
+
+func getVideoStore(req *http.Request) store.VideoStore {
+	// TODO
+	return nil
 }
