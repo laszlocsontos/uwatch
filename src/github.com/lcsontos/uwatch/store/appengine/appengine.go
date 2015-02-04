@@ -37,7 +37,7 @@ func (store Store) FindLongVideoUrlByID(id int64) (*catalog.LongVideoUrl, error)
 }
 
 func (store Store) FindLongVideoUrlByVideoKey(videoKey *catalog.VideoKey) (*catalog.LongVideoUrl, error) {
-	key := datastore.NewKey(*store.context, _KIND, "", 0, nil)
+	key := datastore.NewKey(*store.context, _KIND, videoKey.String(), 0, nil)
 
 	return store.getLongVideoUrl(key)
 }

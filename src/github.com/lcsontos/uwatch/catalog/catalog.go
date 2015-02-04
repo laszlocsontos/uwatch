@@ -115,6 +115,10 @@ func (url *LongVideoUrl) String() string {
 	return ""
 }
 
+func (videoKey *VideoKey) String() string {
+	return fmt.Sprintf("%s@%s", videoKey.VideoType, videoKey.VideoId)
+}
+
 func (videoType VideoType) String() string {
 	return videoTypesStringMap[videoType]
 }
