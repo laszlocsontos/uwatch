@@ -24,6 +24,7 @@ import (
 
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/normalizer"
+	"github.com/lcsontos/uwatch/registry"
 	"github.com/lcsontos/uwatch/store"
 )
 
@@ -60,7 +61,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 		return nil, &UnsupportedVideoTypeError{videoType}
 	}
 
-	videoStore := getVideoStore(req)
+	videoStore := registry.GetVideoStore(req)
 
 	longVideoUrl, err := videoStore.FindLongVideoUrlByVideoKey(videoKey)
 
@@ -116,9 +117,4 @@ func ParseVideoUrl(videoUrl string) (*catalog.VideoKey, error) {
 	}
 
 	return videoKey, nil
-}
-
-func getVideoStore(req *http.Request) store.VideoStore {
-	// TODO
-	return nil
 }

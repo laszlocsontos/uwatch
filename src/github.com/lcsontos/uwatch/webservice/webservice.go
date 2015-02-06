@@ -18,9 +18,6 @@
 package webservice
 
 import (
-	"appengine"
-	"appengine/urlfetch"
-
 	"encoding/json"
 	"log"
 	"net/http"
@@ -29,9 +26,9 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/registry"
 	"github.com/lcsontos/uwatch/service"
 	"github.com/lcsontos/uwatch/util"
-	"github.com/lcsontos/uwatch/youtube"
 )
 
 var videoCatalogRegistry = make(map[catalog.VideoType]catalog.VideoCatalog)
@@ -50,7 +47,7 @@ func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	videoCatalog := getVideoCatalog(videoType, req)
+	videoCatalog := registry.GetVideoCatalog(videoType, req)
 
 	videoKey := &catalog.VideoKey{VideoId: videoId, VideoType: videoType}
 
@@ -88,58 +85,4 @@ func GetParseVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	json.NewEncoder(rw).Encode(*videoKey)
-}
-
-// func init() {
-// 	var err error
-
-// 	// TODO create factory for creating wrapper objects to
-// 	// video sharing services
-// 	videoCatalogRegistry[YouTube], err = youtube.New()
-
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
-
-// I needed this "hack", because app engine requires a http.Request object to
-// instanciate Transport objects. Why on earth do I have to do this???
-// Reference: https://cloud.google.com/appengine/docs/go/urlfetch/
-func getVideoCatalog(videoType catalog.VideoType, req *http.Request) catalog.VideoCatalog {
-	/*
-		videoCatalogRegistryRWM.RLock()
-
-		if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
-			videoCatalogRegistryRWM.RUnlock()
-
-			return videoCatalog
-		}
-
-		videoCatalogRegistryRWM.RUnlock()
-
-		videoCatalogRegistryRWM.Lock()
-
-		if videoCatalog, ok := videoCatalogRegistry[videoType]; ok {
-			videoCatalogRegistryRWM.Unlock()
-
-			return videoCatalog
-		}
-	*/
-	context := appengine.NewContext(req)
-
-	transport := &urlfetch.Transport{Context: context}
-
-	videoCatalog, err := youtube.NewWithRoundTripper(transport)
-
-	if err != nil {
-		panic(err)
-	}
-
-	/*
-		videoCatalogRegistry[videoType] = videoCatalog
-
-		videoCatalogRegistryRWM.Unlock()
-	*/
-
-	return videoCatalog
 }
