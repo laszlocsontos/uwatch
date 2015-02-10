@@ -32,6 +32,10 @@ type VideoStore interface {
 	SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error
 }
 
+type VideoStoreFactory interface {
+	NewStore(args interface{}) VideoStore
+}
+
 func (err *NoSuchLongVideoUrl) Error() string {
 	// TODO
 	return ""

@@ -22,10 +22,15 @@ import (
 	"appengine/datastore"
 
 	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/registry"
+	"github.com/lcsontos/uwatch/store"
 )
 
 type Store struct {
 	context *appengine.Context
+}
+
+type StoreFactory struct {
 }
 
 const _KIND = "LongVideoUrl"
@@ -42,6 +47,11 @@ func (store Store) FindLongVideoUrlByVideoKey(videoKey *catalog.VideoKey) (*cata
 	return store.getLongVideoUrl(key)
 }
 
+func (storeFactory StoreFactory) NewStore(args interface{}) store.VideoStore {
+	// TODO
+	return nil
+}
+
 func (store Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, error) {
 	var longVideoUrl catalog.LongVideoUrl
 
@@ -52,4 +62,8 @@ func (store Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, e
 	}
 
 	return &longVideoUrl, nil
+}
+
+func init() {
+	registry.RegisterVideoStore(&StoreFactory{})
 }

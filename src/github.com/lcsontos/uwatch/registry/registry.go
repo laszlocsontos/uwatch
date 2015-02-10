@@ -28,8 +28,12 @@ import (
 	"github.com/lcsontos/uwatch/youtube"
 )
 
+var videoCatalogFactories = make(map[catalog.VideoType]catalog.VideoCatalogFactory)
+
+var videoStoreFactory store.VideoStoreFactory
+
 func GetVideoCatalog(videoType catalog.VideoType, req *http.Request) catalog.VideoCatalog {
-	// TODO : this package should be appengine agnostic
+	// TODO solve cyclic dependency graph: github.com/lcsontos/uwatch/registry -> github.com/lcsontos/uwatch/youtube -> github.com/lcsontos/uwatch/registry
 
 	context := appengine.NewContext(req)
 
@@ -45,7 +49,13 @@ func GetVideoCatalog(videoType catalog.VideoType, req *http.Request) catalog.Vid
 }
 
 func GetVideoStore(req *http.Request) store.VideoStore {
-	// TODO
+	return videoStoreFactory.NewStore(req)
+}
 
-	return nil
+func RegisterVideoCatalog(videoType catalog.VideoType, factory catalog.VideoCatalogFactory) {
+	videoCatalogFactories[videoType] = factory
+}
+
+func RegisterVideoStore(factory store.VideoStoreFactory) {
+	videoStoreFactory = factory
 }

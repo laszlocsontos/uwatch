@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"sync"
 
 	"github.com/gorilla/mux"
 
@@ -30,10 +29,6 @@ import (
 	"github.com/lcsontos/uwatch/service"
 	"github.com/lcsontos/uwatch/util"
 )
-
-var videoCatalogRegistry = make(map[catalog.VideoType]catalog.VideoCatalog)
-
-var videoCatalogRegistryRWM sync.RWMutex
 
 func GetLongVideoUrl(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)

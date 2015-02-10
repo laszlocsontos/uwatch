@@ -61,6 +61,10 @@ type VideoCatalog interface {
 	SearchByTitle(title string, maxResults int64) ([]VideoRecord, error)
 }
 
+type VideoCatalogFactory interface {
+	NewCatalog(args interface{}) VideoCatalog
+}
+
 const (
 	YouTube VideoType = (iota)
 
