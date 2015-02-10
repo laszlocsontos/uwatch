@@ -21,6 +21,8 @@ import (
 	"appengine"
 	"appengine/datastore"
 
+	"net/http"
+
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/registry"
 	"github.com/lcsontos/uwatch/store"
@@ -48,7 +50,24 @@ func (store Store) FindLongVideoUrlByVideoKey(videoKey *catalog.VideoKey) (*cata
 }
 
 func (storeFactory StoreFactory) NewStore(args interface{}) store.VideoStore {
-	// TODO
+	req := args.(*http.Request)
+
+	context := appengine.NewContext(req)
+
+	return Store{context: &context}
+}
+
+func (store Store) SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error {
+	key := datastore.NewIncompleteKey(*store.context, _KIND, nil)
+
+	key, err := datastore.Put(*store.context, key, longVideoUrl)
+
+	if err != nil {
+		return err
+	}
+
+	longVideoUrl.Id = key.IntID()
+
 	return nil
 }
 
