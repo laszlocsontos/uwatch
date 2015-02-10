@@ -15,35 +15,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 //
 
-package registry
+package appengine
 
 import (
+	"appengine"
+	"appengine/urlfetch"
+
 	"net/http"
 
 	"github.com/lcsontos/uwatch/catalog"
-	"github.com/lcsontos/uwatch/store"
+	"github.com/lcsontos/uwatch/registry"
+	"github.com/lcsontos/uwatch/youtube"
 )
 
-var videoCatalogFactories = make(map[catalog.VideoType]catalog.VideoCatalogFactory)
+type ServiceFactory struct {
+}
 
-var videoStoreFactory store.VideoStoreFactory
+func (serviceFactory ServiceFactory) NewCatalog(args interface{}) catalog.VideoCatalog {
+	req := args.(*http.Request)
 
-func GetVideoCatalog(videoType catalog.VideoType, req *http.Request) catalog.VideoCatalog {
-	if videoCatalogFactory, ok := videoCatalogFactories[videoType]; ok {
-		return videoCatalogFactory.NewCatalog(req)
+	context := appengine.NewContext(req)
+
+	transport := &urlfetch.Transport{Context: context}
+
+	videoCatalog, err := youtube.NewWithRoundTripper(transport)
+
+	if err != nil {
+		panic(err)
 	}
 
-	return nil
+	return videoCatalog
 }
 
-func GetVideoStore(req *http.Request) store.VideoStore {
-	return videoStoreFactory.NewStore(req)
-}
-
-func RegisterVideoCatalog(videoType catalog.VideoType, factory catalog.VideoCatalogFactory) {
-	videoCatalogFactories[videoType] = factory
-}
-
-func RegisterVideoStore(factory store.VideoStoreFactory) {
-	videoStoreFactory = factory
+func init() {
+	registry.RegisterVideoCatalog(catalog.YouTube, &ServiceFactory{})
 }

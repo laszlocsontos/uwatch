@@ -25,7 +25,6 @@ import (
 	"google.golang.org/api/youtube/v3"
 
 	"github.com/lcsontos/uwatch/catalog"
-	"github.com/lcsontos/uwatch/registry"
 )
 
 const _DEVELOPER_KEY = "AIzaSyDdkE9YERsVIFgH-l7mTxpBgHLDkmkPyMA"
@@ -34,9 +33,6 @@ const _PART = "id,snippet"
 type Service struct {
 	httpClient     *http.Client
 	youTubeService *youtube.Service
-}
-
-type ServiceFactory struct {
 }
 
 func New() (*Service, error) {
@@ -62,11 +58,6 @@ func NewWithRoundTripper(roundTripper http.RoundTripper) (*Service, error) {
 	}
 
 	return &Service{httpClient: client, youTubeService: service}, nil
-}
-
-func (serviceFactory ServiceFactory) NewCatalog(args interface{}) catalog.VideoCatalog {
-	// TODO
-	return nil
 }
 
 func (service Service) SearchByID(videoId string) (*catalog.VideoRecord, error) {
@@ -142,9 +133,4 @@ func (service Service) getVideosListCall(videoId string) *youtube.VideosListCall
 	call := service.youTubeService.Videos.List(_PART)
 
 	return call.Id(videoId)
-}
-
-func init() {
-	// TODO
-	registry.RegisterVideoCatalog(catalog.YouTube, &ServiceFactory{})
 }
