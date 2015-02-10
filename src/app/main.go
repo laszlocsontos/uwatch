@@ -25,6 +25,9 @@ import (
 	"github.com/lcsontos/uwatch/html"
 	"github.com/lcsontos/uwatch/util"
 	"github.com/lcsontos/uwatch/webservice"
+
+	_ "github.com/lcsontos/uwatch/store/appengine"
+	_ "github.com/lcsontos/uwatch/youtube/appengine"
 )
 
 type handlerFuncType func(http.ResponseWriter, *http.Request)
