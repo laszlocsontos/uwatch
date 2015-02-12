@@ -60,7 +60,9 @@ func (storeFactory StoreFactory) NewStore(args interface{}) store.VideoStore {
 }
 
 func (store Store) SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error {
-	key := datastore.NewIncompleteKey(*store.context, _KIND, nil)
+	videoKey := longVideoUrl.VideoKey
+
+	key := datastore.NewKey(*store.context, _KIND, videoKey.String(), 0, nil)
 
 	key, err := datastore.Put(*store.context, key, longVideoUrl)
 
