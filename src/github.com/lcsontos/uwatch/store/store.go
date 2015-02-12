@@ -18,6 +18,8 @@
 package store
 
 import (
+	"fmt"
+
 	"github.com/lcsontos/uwatch/catalog"
 )
 
@@ -37,6 +39,5 @@ type VideoStoreFactory interface {
 }
 
 func (err *NoSuchLongVideoUrl) Error() string {
-	// TODO
-	return ""
+	return fmt.Sprintf("Video with Id %s or Key [%v] does not exist", err.Id, err.VideoKey)
 }

@@ -22,6 +22,8 @@ import (
 	"appengine/datastore"
 
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/lcsontos/uwatch/catalog"
 	"github.com/lcsontos/uwatch/registry"
@@ -71,16 +73,34 @@ func (store Store) SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error {
 	return nil
 }
 
-func (store Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, error) {
+func (s Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, error) {
 	var longVideoUrl catalog.LongVideoUrl
 
-	err := datastore.Get(*store.context, key, &longVideoUrl)
+	err := datastore.Get(*s.context, key, &longVideoUrl)
 
-	if err != nil {
+	switch {
+	case err == nil:
+		return &longVideoUrl, nil
+	case err == datastore.ErrNoSuchEntity:
+		parts := strings.Split(key.StringID(), "@")
+
+		var videoKey *catalog.VideoKey = nil
+
+		if len(parts) == 2 {
+			videoType, _ := strconv.Atoi(parts[0])
+
+			videoKey = &catalog.VideoKey{
+				VideoType: catalog.VideoType(videoType),
+				VideoId:   parts[1],
+			}
+		}
+
+		return nil, &store.NoSuchLongVideoUrl{
+			Id: key.IntID(), VideoKey: videoKey,
+		}
+	default:
 		return nil, err
 	}
-
-	return &longVideoUrl, nil
 }
 
 func init() {
