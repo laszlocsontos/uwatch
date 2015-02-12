@@ -34,8 +34,8 @@ type VideoKey struct {
 }
 
 type LongVideoUrl struct {
-	Id int64
-	*VideoKey
+	Id        int64
+	*VideoKey `datastore:"-"`
 
 	CreatedAt   time.Time
 	PublishedAt time.Time
