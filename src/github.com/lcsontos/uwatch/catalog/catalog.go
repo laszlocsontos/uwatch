@@ -116,7 +116,7 @@ func NewVideoRecord(videoKey *VideoKey, publishedAt time.Time, title string) *Vi
 }
 
 func (url *LongVideoUrl) String() string {
-	return ""
+	return fmt.Sprintf("[%s] Id=%s NormalizedTitle=%s UrlPath=%s", url.VideoKey, url.Id, url.NormalizedTitle, url.UrlPath)
 }
 
 func (videoKey *VideoKey) String() string {

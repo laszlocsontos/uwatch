@@ -65,7 +65,7 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 
 	longVideoUrl, err := videoStore.FindLongVideoUrlByVideoKey(videoKey)
 
-	if _, isAppErr := err.(*store.NoSuchLongVideoUrl); !isAppErr {
+	if _, isAppErr := err.(*store.NoSuchLongVideoUrl); err != nil && !isAppErr {
 		return nil, err
 	}
 
