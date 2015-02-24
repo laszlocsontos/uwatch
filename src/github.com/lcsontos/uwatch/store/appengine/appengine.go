@@ -37,16 +37,23 @@ type Store struct {
 type StoreFactory struct {
 }
 
-const _KIND = "LongVideoUrl"
+const _KIND_LONG_VIDEO_URL = "LongVideoUrl"
+const _KIND_VIDEO_KEY = "VideoKey"
 
 func (store Store) FindLongVideoUrlByID(id int64) (*catalog.LongVideoUrl, error) {
-	key := datastore.NewKey(*store.context, _KIND, "", id, nil)
+	key := datastore.NewKey(*store.context, _KIND_VIDEO_KEY, "", id, nil)
 
-	return store.getLongVideoUrl(key)
+	videoKey, err := store.getVideoKey(key)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return store.FindLongVideoUrlByVideoKey(videoKey)
 }
 
 func (store Store) FindLongVideoUrlByVideoKey(videoKey *catalog.VideoKey) (*catalog.LongVideoUrl, error) {
-	key := datastore.NewKey(*store.context, _KIND, videoKey.String(), 0, nil)
+	key := datastore.NewKey(*store.context, _KIND_LONG_VIDEO_URL, videoKey.String(), 0, nil)
 
 	return store.getLongVideoUrl(key)
 }
@@ -62,15 +69,17 @@ func (storeFactory StoreFactory) NewStore(args interface{}) store.VideoStore {
 func (store Store) SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error {
 	videoKey := longVideoUrl.VideoKey
 
-	key := datastore.NewKey(*store.context, _KIND, videoKey.String(), 0, nil)
-
-	key, err := datastore.Put(*store.context, key, longVideoUrl)
+	videoKeyKey := datastore.NewIncompleteKey(*store.context, _KIND_VIDEO_KEY, nil)
+	videoKeyKey, err := datastore.Put(*store.context, videoKeyKey, videoKey)
 
 	if err != nil {
 		return err
 	}
 
-	longVideoUrl.Id = key.IntID()
+	longVideoUrlKey := datastore.NewKey(*store.context, _KIND_LONG_VIDEO_URL, videoKey.String(), 0, nil)
+	longVideoUrlKey, err = datastore.Put(*store.context, longVideoUrlKey, longVideoUrl)
+
+	longVideoUrl.Id = videoKeyKey.IntID()
 
 	return nil
 }
@@ -100,6 +109,21 @@ func (s Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, error
 		return nil, &store.NoSuchLongVideoUrl{
 			Id: key.IntID(), VideoKey: videoKey,
 		}
+	default:
+		return nil, err
+	}
+}
+
+func (s Store) getVideoKey(key *datastore.Key) (*catalog.VideoKey, error) {
+	var videoKey catalog.VideoKey
+
+	err := datastore.Get(*s.context, key, &videoKey)
+
+	switch {
+	case err == nil:
+		return &videoKey, nil
+	case err == datastore.ErrNoSuchEntity:
+		return nil, &store.NoSuchLongVideoUrl{Id: key.IntID()}
 	default:
 		return nil, err
 	}
