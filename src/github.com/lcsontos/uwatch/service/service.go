@@ -70,6 +70,8 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 	}
 
 	if longVideoUrl != nil {
+		longVideoUrl.FillUrlPath()
+
 		return longVideoUrl, nil
 	}
 
@@ -81,15 +83,15 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 
 	longVideoUrl = catalog.NewLongVideoUrl(videoRecord)
 
+	longVideoUrl.NormalizedTitle = normalizer.Normalize(videoRecord.Title)
+
 	err = videoStore.SaveLongVideoUrl(longVideoUrl)
 
 	if err != nil {
 		return nil, err
 	}
 
-	normalizedTitle := normalizer.Normalize(videoRecord.Title)
-
-	longVideoUrl.UrlPath = fmt.Sprintf("%d/%s", longVideoUrl.Id, normalizedTitle)
+	longVideoUrl.FillUrlPath()
 
 	return longVideoUrl, nil
 }

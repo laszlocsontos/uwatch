@@ -41,7 +41,7 @@ type LongVideoUrl struct {
 	PublishedAt time.Time
 
 	NormalizedTitle string
-	UrlPath         string
+	UrlPath         string `datastore:"-"`
 }
 
 type VideoRecord struct {
@@ -92,6 +92,10 @@ func (err *InvalidVideoTypeNameError) Error() string {
 
 func (err *NoSuchVideoError) Error() string {
 	return fmt.Sprintf("Video with Id %s does not exist", err.VideoId)
+}
+
+func (url *LongVideoUrl) FillUrlPath() {
+	url.UrlPath = fmt.Sprintf("%d/%s", url.Id, url.NormalizedTitle)
 }
 
 func GetVideoTypeByName(videoTypeName string) (VideoType, error) {
