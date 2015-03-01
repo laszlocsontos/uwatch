@@ -19,6 +19,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -65,6 +66,8 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 
 	longVideoUrl, err := videoStore.FindLongVideoUrlByVideoKey(videoKey)
 
+	log.Printf("videoStore.FindLongVideoUrlByVideoKey(%s): %s", videoKey, longVideoUrl)
+
 	if _, isAppErr := err.(*store.NoSuchLongVideoUrl); err != nil && !isAppErr {
 		return nil, err
 	}
@@ -72,10 +75,14 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 	if longVideoUrl != nil {
 		longVideoUrl.FillUrlPath()
 
+		log.Printf("longVideoUrl.FillUrlPath(): %s", longVideoUrl)
+
 		return longVideoUrl, nil
 	}
 
 	videoRecord, err := videoCatalog.SearchByID(videoKey.VideoId)
+
+	log.Printf("videoCatalog.SearchByID(): %s", videoRecord)
 
 	if err != nil {
 		return nil, err
@@ -83,7 +90,11 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 
 	longVideoUrl = catalog.NewLongVideoUrl(videoRecord)
 
+	log.Printf("catalog.NewLongVideoUrl(): %s", longVideoUrl)
+
 	longVideoUrl.NormalizedTitle = normalizer.Normalize(videoRecord.Title)
+
+	log.Printf("normalizer.Normalize(): %s", longVideoUrl)
 
 	err = videoStore.SaveLongVideoUrl(longVideoUrl)
 
@@ -92,6 +103,8 @@ func LongVideoUrl(videoCatalog catalog.VideoCatalog, videoKey *catalog.VideoKey,
 	}
 
 	longVideoUrl.FillUrlPath()
+
+	log.Printf("longVideoUrl.FillUrlPath() #2: %s", longVideoUrl)
 
 	return longVideoUrl, nil
 }

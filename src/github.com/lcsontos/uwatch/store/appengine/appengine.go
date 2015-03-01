@@ -21,6 +21,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -75,9 +76,11 @@ func (storeFactory StoreFactory) NewStore(args interface{}) store.VideoStore {
 }
 
 func (store Store) SaveLongVideoUrl(longVideoUrl *catalog.LongVideoUrl) error {
+	transactionOptions := &datastore.TransactionOptions{XG: true}
+
 	return datastore.RunInTransaction(*store.context, func(context appengine.Context) error {
 		return doSaveLongVideoUrl(context, longVideoUrl)
-	}, nil)
+	}, transactionOptions)
 }
 
 func (s Store) getLongVideoUrl(key *datastore.Key) (*catalog.LongVideoUrl, error) {
@@ -128,8 +131,12 @@ func (s Store) getVideoKey(key *datastore.Key) (*catalog.VideoKey, error) {
 func doSaveLongVideoUrl(context appengine.Context, longVideoUrl *catalog.LongVideoUrl) error {
 	videoKey := longVideoUrl.VideoKey
 
+	log.Printf("videoKey: %s", *videoKey)
+
 	videoKeyKey := datastore.NewIncompleteKey(context, _KIND_VIDEO_KEY, nil)
 	videoKeyKey, err := datastore.Put(context, videoKeyKey, videoKey)
+
+	log.Printf("videoKeyKey, err: %s, %s", *videoKeyKey, err)
 
 	if err != nil {
 		return err
@@ -137,10 +144,14 @@ func doSaveLongVideoUrl(context appengine.Context, longVideoUrl *catalog.LongVid
 
 	longVideoUrl.Id = videoKeyKey.IntID()
 
+	log.Printf("longVideoUrl: %s", longVideoUrl)
+
 	longVideoUrlKey := datastore.NewKey(context, _KIND_LONG_VIDEO_URL, videoKey.String(), 0, nil)
 	longVideoUrlKey, err = datastore.Put(context, longVideoUrlKey, longVideoUrl)
 
-	return nil
+	log.Printf("longVideoUrlKey, err: %s", longVideoUrlKey, err)
+
+	return err
 }
 
 func init() {
