@@ -47,7 +47,6 @@ func TestNormalize(t *testing.T) {
 
 		got, want := Normalize(text), data.want
 
-		// TODO manual test succeeds, but this fails, check later why?
 		if got != want {
 			t.Fatalf("Normalize(%s) = %s, but wanted %s", text, got, want)
 		}
