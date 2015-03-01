@@ -25,7 +25,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/lcsontos/uwatch/store"
+	"github.com/lcsontos/uwatch/registry"
 	"github.com/lcsontos/uwatch/util"
 )
 
@@ -78,13 +78,8 @@ func getPathTokens(url *url.URL) (int64, string, error) {
 	return urlId, normalizedTitle, nil
 }
 
-func getVideoStore(req *http.Request) store.VideoStore {
-	// TODO
-	return nil
-}
-
 func getVideoUrl(urlId int64, req *http.Request) (string, error) {
-	videoStore := getVideoStore(req)
+	videoStore := registry.GetVideoStore(req)
 
 	longVideoUrl, err := videoStore.FindLongVideoUrlByID(urlId)
 
