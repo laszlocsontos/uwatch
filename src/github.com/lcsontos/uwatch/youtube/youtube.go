@@ -74,15 +74,13 @@ func (service Service) SearchByID(videoId string) (*catalog.VideoRecord, error) 
 	}
 
 	videoId = response.Items[0].Id
-
 	videoKey := &catalog.VideoKey{videoId, catalog.YouTube}
+
+	publishedTime := parsePublishedAt(response.Items[0].Snippet.PublishedAt)
 
 	title := response.Items[0].Snippet.Title
 
-	// TODO implement time conversion
-	// videoRecord.PublishedAt = response.Items[0].Snippet.PublishedAt
-
-	videoRecord := catalog.NewVideoRecord(videoKey, time.Now(), title)
+	videoRecord := catalog.NewVideoRecord(videoKey, publishedTime, title)
 
 	return videoRecord, nil
 }
@@ -107,11 +105,12 @@ func (service Service) SearchByTitle(title string, maxResults int64) ([]catalog.
 		videoRecords = make([]catalog.VideoRecord, itemCount)
 
 		for index, item := range items {
-			// TODO implement time conversion
-
 			videoKey := &catalog.VideoKey{item.Id.VideoId, catalog.YouTube}
 
-			videoRecord := catalog.NewVideoRecord(videoKey, time.Now(), item.Snippet.Title)
+			publishedTime := parsePublishedAt(item.Snippet.PublishedAt)
+			title := item.Snippet.Title
+
+			videoRecord := catalog.NewVideoRecord(videoKey, publishedTime, title)
 
 			videoRecords[index] = *videoRecord
 		}
@@ -133,4 +132,12 @@ func (service Service) getVideosListCall(videoId string) *youtube.VideosListCall
 	call := service.youTubeService.Videos.List(_PART)
 
 	return call.Id(videoId)
+}
+
+func parsePublishedAt(publishedAt string) time.Time {
+	if publishedTime, err := time.Parse(time.RFC3339Nano, publishedAt); err == nil {
+		return publishedTime
+	} else {
+		return time.Unix(0, 0)
+	}
 }
