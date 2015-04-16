@@ -22,6 +22,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/lcsontos/uwatch/config"
 	"github.com/lcsontos/uwatch/html"
 	"github.com/lcsontos/uwatch/util"
 	"github.com/lcsontos/uwatch/webservice"
@@ -47,6 +48,8 @@ func handleSafely(handlerFunc handlerFuncType) handlerFuncType {
 }
 
 func init() {
+	config.Init()
+
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc(

@@ -18,10 +18,12 @@
 package youtube
 
 import (
+	"flag"
 	"fmt"
 	"testing"
 
 	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/config"
 )
 
 func TestSearchByID(t *testing.T) {
@@ -59,6 +61,12 @@ func (service *Service) doTestSearchByID(videoId string, wantNoSuchVideoError bo
 }
 
 func newService(t *testing.T) *Service {
+	config.ReadConfig("youtube_key.xml")
+
+	developerKey = *flag.String("YouTubeDevKey", "", "")
+
+	setDeveloperKey(developerKey)
+
 	service, err := New()
 
 	if err != nil {

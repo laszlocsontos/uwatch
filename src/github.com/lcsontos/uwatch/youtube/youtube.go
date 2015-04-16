@@ -18,6 +18,7 @@
 package youtube
 
 import (
+	"flag"
 	"net/http"
 	"time"
 
@@ -27,13 +28,14 @@ import (
 	"github.com/lcsontos/uwatch/catalog"
 )
 
-const _DEVELOPER_KEY = "AIzaSyDdkE9YERsVIFgH-l7mTxpBgHLDkmkPyMA"
 const _PART = "id,snippet"
 
 type Service struct {
 	httpClient     *http.Client
 	youTubeService *youtube.Service
 }
+
+var developerKey string
 
 func New() (*Service, error) {
 	service, err := NewWithRoundTripper(nil)
@@ -43,7 +45,7 @@ func New() (*Service, error) {
 
 func NewWithRoundTripper(roundTripper http.RoundTripper) (*Service, error) {
 	transport := &transport.APIKey{
-		Key:       _DEVELOPER_KEY,
+		Key:       developerKey,
 		Transport: roundTripper,
 	}
 
@@ -134,10 +136,18 @@ func (service Service) getVideosListCall(videoId string) *youtube.VideosListCall
 	return call.Id(videoId)
 }
 
+func init() {
+	developerKey = *flag.String("YouTubeDevKey", "", "")
+}
+
 func parsePublishedAt(publishedAt string) time.Time {
 	if publishedTime, err := time.Parse(time.RFC3339Nano, publishedAt); err == nil {
 		return publishedTime
 	} else {
 		return time.Unix(0, 0)
 	}
+}
+
+func setDeveloperKey(devKey string) {
+	developerKey = devKey
 }
