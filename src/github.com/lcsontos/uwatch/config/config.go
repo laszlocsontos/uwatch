@@ -67,23 +67,13 @@ func Init(configFile ...string) {
 
 	log.Printf("Reading configuration: %s", cfgFile)
 
-	config := ReadConfig(cfgFile)
+	config := readConfig(cfgFile)
 
 	log.Printf("Initializing application with configuration:\n%s", config)
 
 	for _, parameter := range config.Parameters {
 		SetValue(parameter.Name, parameter.Value)
 	}
-}
-
-func ReadConfig(configFile string) *Config {
-	data, err := ioutil.ReadFile(configFile)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return parseConfig(data)
 }
 
 func SetValue(name, value string) {
@@ -116,4 +106,14 @@ func parseConfig(data []byte) *Config {
 	}
 
 	return config
+}
+
+func readConfig(configFile string) *Config {
+	data, err := ioutil.ReadFile(configFile)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return parseConfig(data)
 }
