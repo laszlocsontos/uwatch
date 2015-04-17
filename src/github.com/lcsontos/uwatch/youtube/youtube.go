@@ -18,7 +18,6 @@
 package youtube
 
 import (
-	"flag"
 	"net/http"
 	"time"
 
@@ -26,6 +25,7 @@ import (
 	"google.golang.org/api/youtube/v3"
 
 	"github.com/lcsontos/uwatch/catalog"
+	"github.com/lcsontos/uwatch/config"
 )
 
 const _PART = "id,snippet"
@@ -137,7 +137,7 @@ func (service Service) getVideosListCall(videoId string) *youtube.VideosListCall
 }
 
 func init() {
-	developerKey = *flag.String("YouTubeDevKey", "", "")
+	developerKey = config.GetValue("YouTubeDevKey")
 }
 
 func parsePublishedAt(publishedAt string) time.Time {

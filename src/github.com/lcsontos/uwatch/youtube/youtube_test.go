@@ -18,7 +18,6 @@
 package youtube
 
 import (
-	"flag"
 	"fmt"
 	"testing"
 
@@ -61,9 +60,11 @@ func (service *Service) doTestSearchByID(videoId string, wantNoSuchVideoError bo
 }
 
 func newService(t *testing.T) *Service {
-	config.ReadConfig("youtube_key.xml")
+	config.Init("youtube_key.xml")
 
-	developerKey = *flag.String("YouTubeDevKey", "", "")
+	developerKey = config.GetValue("YouTubeDevKey")
+
+	fmt.Printf("Developer Key is: %s", developerKey)
 
 	setDeveloperKey(developerKey)
 

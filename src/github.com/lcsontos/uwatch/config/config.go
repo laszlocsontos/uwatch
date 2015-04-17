@@ -20,10 +20,10 @@ package config
 import (
 	"bytes"
 	"encoding/xml"
-	"flag"
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"sync"
 )
 
 const _CONFIG_XML = "config.xml"
@@ -41,21 +41,38 @@ type (
 	}
 )
 
-func Init() {
-	configFile, err := filepath.Abs(_CONFIG_XML)
+var parameterMap = make(map[string]string)
+var parameterMutex = &sync.RWMutex{}
+
+func GetValue(name string) string {
+	defer parameterMutex.RUnlock()
+
+	parameterMutex.RLock()
+
+	return parameterMap[name]
+}
+
+func Init(configFile ...string) {
+	cfgFile := _CONFIG_XML
+
+	if (configFile != nil) && len(configFile) > 0 {
+		cfgFile = configFile[0]
+	}
+
+	cfgFile, err := filepath.Abs(cfgFile)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Printf("Reading configuration: %s", configFile)
+	log.Printf("Reading configuration: %s", cfgFile)
 
-	config := ReadConfig(configFile)
+	config := ReadConfig(cfgFile)
 
 	log.Printf("Initializing application with configuration:\n%s", config)
 
 	for _, parameter := range config.Parameters {
-		flag.Set(parameter.Name, parameter.Value)
+		SetValue(parameter.Name, parameter.Value)
 	}
 }
 
@@ -67,6 +84,14 @@ func ReadConfig(configFile string) *Config {
 	}
 
 	return parseConfig(data)
+}
+
+func SetValue(name, value string) {
+	defer parameterMutex.Unlock()
+
+	parameterMutex.Lock()
+
+	parameterMap[name] = value
 }
 
 func (config *Config) String() string {
