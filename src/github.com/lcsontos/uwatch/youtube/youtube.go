@@ -44,6 +44,10 @@ func New() (*Service, error) {
 }
 
 func NewWithRoundTripper(roundTripper http.RoundTripper) (*Service, error) {
+	if developerKey == "" {
+		developerKey = config.GetValue("YouTubeDevKey")
+	}
+
 	transport := &transport.APIKey{
 		Key:       developerKey,
 		Transport: roundTripper,
@@ -134,10 +138,6 @@ func (service Service) getVideosListCall(videoId string) *youtube.VideosListCall
 	call := service.youTubeService.Videos.List(_PART)
 
 	return call.Id(videoId)
-}
-
-func init() {
-	developerKey = config.GetValue("YouTubeDevKey")
 }
 
 func parsePublishedAt(publishedAt string) time.Time {
